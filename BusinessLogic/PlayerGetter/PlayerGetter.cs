@@ -2,6 +2,7 @@
 using DataAccess.PlayerRepository;
 using Entities.DbModels;
 using Entities.Types;
+using Microsoft.Extensions.Logging;
 using Services.NhlData;
 
 namespace BusinessLogic.PlayerGetter
@@ -11,10 +12,12 @@ namespace BusinessLogic.PlayerGetter
         private const int PLAYER_CUTOFF = 300;
         private IPlayerRepository _playerRepo;
         private INhlDataGetter _nhlDataGetter;
-        public PlayerGetter(IPlayerRepository playerRepo, INhlDataGetter nhlDataGetter)
+        private readonly ILogger _logger;
+        public PlayerGetter(IPlayerRepository playerRepo, INhlDataGetter nhlDataGetter, ILogger logger)
 		{
 			_playerRepo = playerRepo;
 			_nhlDataGetter = nhlDataGetter;
+            _logger = logger;
 		}
         /// <summary>
         /// Gets all players and their values for a season range and stores to db
@@ -23,16 +26,22 @@ namespace BusinessLogic.PlayerGetter
         /// <returns>None</returns>
         public async Task GetPlayers(YearRange seasonYearRange)
         {
+            int numberOfPlayersAdded = 0;
             for (int seasonStartYear = seasonYearRange.StartYear; seasonStartYear <= seasonYearRange.EndYear; seasonStartYear++)
             {
                 var hasAllplayers = await AllPlayersExist(seasonStartYear);
                 var isCurrentSeason = IsCurrentSeason(seasonStartYear, seasonYearRange.EndYear);
                 if (hasAllplayers && !isCurrentSeason)
+                {
+                    _logger.LogInformation("All player data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
                     continue;
+                }
 
                 var players = await GetPlayerValues(seasonStartYear);
                 await _playerRepo.AddUpdatePlayers(players);
+                numberOfPlayersAdded += players.Count();
             }
+            _logger.LogInformation("Number of Added Players: " + numberOfPlayersAdded.ToString());
         }
         /// <summary>
         /// Gets the players and their values for the given season.

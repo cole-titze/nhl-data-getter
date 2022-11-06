@@ -1,25 +1,27 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Logging;
 using Entry;
 
-var dataGetter = new DataGetter();
+ServiceProvider serviceProvider = new ServiceCollection()
+    .AddLogging((loggingBuilder) => loggingBuilder
+        .SetMinimumLevel(LogLevel.Trace)
+        .AddConsole()
+        )
+    .BuildServiceProvider();
 
-// Build service collection
-var collection = new ServiceCollection();
-var sp = collection.BuildServiceProvider();
+var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
-// Get logger and run main
-using (var scope = sp.CreateScope())
+var dataGetter = new DataGetter(logger);
+string? gamesConnectionString = Environment.GetEnvironmentVariable("NHL_DATABASE");
+
+if (gamesConnectionString == null)
 {
-    string? gamesConnectionString = Environment.GetEnvironmentVariable("NHL_DATABASE");
-
-    if (gamesConnectionString == null)
-    {
-        var config = new ConfigurationBuilder().AddJsonFile("appsettings.Local.json").Build();
-        gamesConnectionString = config.GetConnectionString("GAMES_DATABASE");
-    }
-    if (gamesConnectionString == null)
-        throw new Exception("Connection String Null");
-
-    await dataGetter.Main(gamesConnectionString);
+    var config = new ConfigurationBuilder().AddJsonFile("appsettings.Local.json").Build();
+    gamesConnectionString = config.GetConnectionString("GAMES_DATABASE");
 }
+if (gamesConnectionString == null)
+    throw new Exception("Connection String Null");
+
+await dataGetter.Main(gamesConnectionString);

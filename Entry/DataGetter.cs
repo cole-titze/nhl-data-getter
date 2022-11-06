@@ -6,39 +6,46 @@ using Entities.Types;
 using Services.RequestMaker;
 using Services.NhlData;
 using BusinessLogic.PlayerGetter;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace Entry
 {
 	public class DataGetter
 	{
         private const int START_YEAR = 2010;
+        private readonly ILogger _logger;
 
+        public DataGetter(ILogger logger)
+        {
+            _logger = logger;
+        }
         /// <summary>
         /// Gets and stores all new games and player values.
         /// </summary>
         /// <param name="gamesConnectionString">db connection string</param>
-        /// <returns></returns>
+        /// <returns>None</returns>
         public async Task Main(string gamesConnectionString)
         {
-            // Run Data Collection
+            Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
             var nhlDbContext = new NhlDbContext(gamesConnectionString);
             var playerRepo = new PlayerRepository(nhlDbContext);
             var gameRepo = new GameRepository(nhlDbContext);
             var requestMaker = new RequestMaker();
-            var nhlRequestMaker = new NhlApiDataGetter(requestMaker);
+            var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _logger);
             var yearRange = new YearRange(START_YEAR, DateTime.Now);
 
-            Console.WriteLine("Starting Game Getter");
-            var gameGetter = new GameGetter(gameRepo, nhlRequestMaker);
+            _logger.LogTrace("Starting Game Getter");
+            var gameGetter = new GameGetter(gameRepo, nhlRequestMaker, _logger);
             await gameGetter.GetGames(yearRange);
-            Console.WriteLine("Completed Game Getter");
+            _logger.LogTrace("Completed Game Getter");
 
-            Console.WriteLine("Starting Player Getter");
+            _logger.LogTrace("Starting Player Getter");
             yearRange.StartYear = START_YEAR - 1; // We may want player values from previous season
-            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker);
+            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker, _logger);
             await playerGetter.GetPlayers(yearRange);
-            Console.WriteLine("Completed Player Getter");
+            _logger.LogTrace("Completed Player Getter");
         }
 	}
 }

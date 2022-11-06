@@ -1,6 +1,7 @@
 ﻿using DataAccess.GameRepository;
 using Entities.DbModels;
 using Entities.Types;
+using Microsoft.Extensions.Logging;
 using Services.NhlData;
 
 namespace BusinessLogic.GameGetter
@@ -9,25 +10,33 @@ namespace BusinessLogic.GameGetter
 	{
         private IGameRepository _gameRepo;
         private INhlDataGetter _nhlDataGetter;
-        public GameGetter(IGameRepository gameRepository, INhlDataGetter nhlDataGetter)
+        private readonly ILogger _logger;
+        public GameGetter(IGameRepository gameRepository, INhlDataGetter nhlDataGetter, ILogger logger)
         {
             _gameRepo = gameRepository;
             _nhlDataGetter = nhlDataGetter;
+            _logger = logger;
         }
         /// <summary>
         /// Gets all nhl games within the season range. If the game is already in the database, it is skipped.
         /// </summary>
         public async Task GetGames(YearRange seasonYearRange)
         {
+            int numberOfGamesAdded = 0;
             for (int seasonStartYear = seasonYearRange.StartYear; seasonStartYear <= seasonYearRange.EndYear; seasonStartYear++)
             {
                 if (await SeasonGamesExist(seasonStartYear))
+                {
+                    _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
                     continue;
+                }
 
                 var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
                 var seasonGames = await GetSeasonGames(seasonStartYear, seasonGameCount);
                 await _gameRepo.AddGames(seasonGames);
+                numberOfGamesAdded += seasonGames.Count();
             }
+            _logger.LogInformation("Number of Games Added: " + numberOfGamesAdded.ToString());
         }
         /// <summary>
         /// Gets if all of a seasons games are already found
@@ -53,7 +62,8 @@ namespace BusinessLogic.GameGetter
 
             var seasonGames = new List<DbGame>();
             DbGame game;
-            for (int count = 0; count <= gameCount; count++)
+            // game ids start at 1
+            for (int count = 1; count <= gameCount; count++)
             {
                 var gameId = _nhlDataGetter.GetGameIdFrom(seasonStartYear, count);
                 if (_gameRepo.GameExistsInCache(gameId))

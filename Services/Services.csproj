@@ -11,6 +11,7 @@
     <None Remove="Newtonsoft.Json" />
     <None Remove="RequestMaker\" />
     <None Remove="NhlData\Mappers\" />
+    <None Remove="Microsoft.Extensions.Logging" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="NhlData\" />
@@ -22,5 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
   </ItemGroup>
 </Project>

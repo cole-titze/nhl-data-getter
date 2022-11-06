@@ -1,18 +1,21 @@
 ﻿using Entities.DbModels;
 using Services.RequestMaker;
 using Services.NhlData.Mappers;
+using Microsoft.Extensions.Logging;
 
 namespace Services.NhlData
 {
     public partial class NhlApiDataGetter : INhlDataGetter
     {
         IRequestMaker _requestMaker;
+        private readonly ILogger _logger;
         private const int DEFAULT_GAME_COUNT = 1400;
         private const string SEASON_TYPE = "02"; // 02 is the regular season id for nhl api
         private Dictionary<int, int> _seasonGameCountCache = new Dictionary<int, int>();
-        public NhlApiDataGetter(IRequestMaker requestMaker)
+        public NhlApiDataGetter(IRequestMaker requestMaker, ILogger logger)
         {
             _requestMaker = requestMaker;
+            _logger = logger;
         }
         /// <summary>
         /// Builds a game id to the nhl api standard "year""gameType"""gameId"
@@ -39,7 +42,7 @@ namespace Services.NhlData
         }
     }
 
-    public partial class NhlApiDataGetter
+    public partial class NhlApiDataGetter : INhlGameGetter
     {
         /// <summary>
         /// Calls the Nhl api and parses the response into a game.
@@ -52,6 +55,11 @@ namespace Services.NhlData
             string url = "http://statsapi.web.nhl.com/api/v1/game/";
             string query = GetGameQuery(gameId);
             var gameResponse = await _requestMaker.MakeRequest(url, query);
+            if (gameResponse == null)
+            {
+                _logger.LogWarning("Failed to get game with id: " + gameId.ToString());
+                return new DbGame();
+            }
             if (InvalidGame(gameResponse))
                 return new DbGame();
 
@@ -64,8 +72,6 @@ namespace Services.NhlData
         /// <returns></returns>
         private bool InvalidGame(dynamic message)
         {
-            if (message == null)
-                return true;
             if (message.gameData.status.detailedState != "Final")
                 return true;
 
@@ -115,7 +121,10 @@ namespace Services.NhlData
             string query = GetTotalGamesQuery(seasonStartYear);
             var scheduleResponse = await _requestMaker.MakeRequest(url, query);
             if (scheduleResponse == null)
+            {
+                _logger.LogWarning("Schedule request failed, using default game count: " + DEFAULT_GAME_COUNT.ToString());
                 return DEFAULT_GAME_COUNT;
+            }
             _seasonGameCountCache[seasonStartYear] = MapScheduleToGameCount.Map(scheduleResponse);
             return _seasonGameCountCache[seasonStartYear];
         }
@@ -137,7 +146,7 @@ namespace Services.NhlData
             var playersResponse = await _requestMaker.MakeRequest(url, query);
             if (playersResponse == null)
             {
-                Console.WriteLine($"Player ids for team request failed: Season: {seasonStartYear} Team: {teamId}");
+                _logger.LogWarning($"Failed to get player ids from team request: Season: {seasonStartYear} Team: {teamId}");
                 return new List<int>();
             }
 
@@ -158,7 +167,7 @@ namespace Services.NhlData
             var playerStatResponse = await _requestMaker.MakeRequest(url, query);
             if (playerStatResponse == null)
             {
-                Console.WriteLine($"Player stat request failed: player id: {playerId} year: {seasonStartYear}");
+                _logger.LogWarning($"Player stat request failed: player id: {playerId} year: {seasonStartYear}");
                 return new DbPlayer();
             }
 
@@ -169,7 +178,7 @@ namespace Services.NhlData
             var playerPositionResponse = await _requestMaker.MakeRequest(url, query);
             if (playerPositionResponse == null)
             {
-                Console.WriteLine($"Player position request failed: player id: {playerId} year: {seasonStartYear}");
+                _logger.LogWarning($"Player position request failed: player id: {playerId} year: {seasonStartYear}");
                 return new DbPlayer();
             }
             player.position = MapPlayerBioResponseToPositionStr.Map(playerPositionResponse);
@@ -191,7 +200,10 @@ namespace Services.NhlData
             string query = "?season="+seasonId.ToString();
             var teamResponse = await _requestMaker.MakeRequest(url, query);
             if (teamResponse == null)
+            {
+                _logger.LogWarning("Failed to get teams for season: " + seasonStartYear.ToString());
                 return new List<int>();
+            }
 
             return MapTeamResponseToTeamIds.Map(teamResponse);
         }
