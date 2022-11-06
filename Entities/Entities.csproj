@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="DbModels\" />
+    <None Remove="Types\" />
+    <None Remove="Models\" />
+    <None Remove="Types\Mappers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DbModels\" />
+    <Folder Include="Types\" />
+    <Folder Include="Models\" />
+    <Folder Include="Types\Mappers\" />
+  </ItemGroup>
+</Project>

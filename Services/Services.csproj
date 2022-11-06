@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NhlData\" />
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="RequestMaker\" />
+    <None Remove="NhlData\Mappers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NhlData\" />
+    <Folder Include="RequestMaker\" />
+    <Folder Include="NhlData\Mappers\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Entities\Entities.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+</Project>
