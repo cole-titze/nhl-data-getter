@@ -7,7 +7,7 @@ namespace Services.NhlData
 {
     public partial class NhlApiDataGetter : INhlDataGetter
     {
-        IRequestMaker _requestMaker;
+        private readonly IRequestMaker _requestMaker;
         private readonly ILogger _logger;
         private const int DEFAULT_GAME_COUNT = 1400;
         private const string SEASON_TYPE = "02"; // 02 is the regular season id for nhl api
