@@ -22,9 +22,10 @@ namespace BusinessLogic.GameGetter
         /// </summary>
         public async Task GetGames(YearRange seasonYearRange)
         {
-            int numberOfGamesAdded = 0;
+            int numberOfGamesAdded;
             for (int seasonStartYear = seasonYearRange.StartYear; seasonStartYear <= seasonYearRange.EndYear; seasonStartYear++)
             {
+                numberOfGamesAdded = 0;
                 if (await SeasonGamesExist(seasonStartYear))
                 {
                     _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
@@ -34,9 +35,8 @@ namespace BusinessLogic.GameGetter
                 var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
                 var seasonGames = await GetSeasonGames(seasonStartYear, seasonGameCount);
                 await _gameRepo.AddGames(seasonGames);
-                numberOfGamesAdded += seasonGames.Count();
+                _logger.LogInformation("Number of Games Added To Season" + seasonStartYear.ToString() + ": " + numberOfGamesAdded.ToString());
             }
-            _logger.LogInformation("Number of Games Added: " + numberOfGamesAdded.ToString());
         }
         /// <summary>
         /// Gets if all of a seasons games are already found
