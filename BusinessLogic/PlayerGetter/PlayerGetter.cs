@@ -10,8 +10,8 @@ namespace BusinessLogic.PlayerGetter
 	public class PlayerGetter
 	{
         private const int PLAYER_CUTOFF = 300;
-        private IPlayerRepository _playerRepo;
-        private INhlDataGetter _nhlDataGetter;
+        private readonly IPlayerRepository _playerRepo;
+        private readonly INhlDataGetter _nhlDataGetter;
         private readonly ILogger _logger;
         public PlayerGetter(IPlayerRepository playerRepo, INhlDataGetter nhlDataGetter, ILogger logger)
 		{

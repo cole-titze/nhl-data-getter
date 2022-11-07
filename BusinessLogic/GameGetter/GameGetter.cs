@@ -8,8 +8,8 @@ namespace BusinessLogic.GameGetter
 {
 	public class GameGetter
 	{
-        private IGameRepository _gameRepo;
-        private INhlDataGetter _nhlDataGetter;
+        private readonly IGameRepository _gameRepo;
+        private readonly INhlDataGetter _nhlDataGetter;
         private readonly ILogger _logger;
         public GameGetter(IGameRepository gameRepository, INhlDataGetter nhlDataGetter, ILogger logger)
         {
