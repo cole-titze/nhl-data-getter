@@ -35,17 +35,17 @@ namespace Entry
             var requestMaker = new RequestMaker();
             var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _logger);
             var yearRange = new YearRange(START_YEAR, DateTime.Now);
+            var playerYearRange = new YearRange(START_YEAR - 1, DateTime.Now); // We may want player values from previous season
+
+            _logger.LogTrace("Starting Player Getter");
+            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker, _logger);
+            await playerGetter.GetPlayers(playerYearRange);
+            _logger.LogTrace("Completed Player Getter");
 
             _logger.LogTrace("Starting Game Getter");
             var gameGetter = new GameGetter(gameRepo, nhlRequestMaker, _logger);
             await gameGetter.GetGames(yearRange);
             _logger.LogTrace("Completed Game Getter");
-
-            _logger.LogTrace("Starting Player Getter");
-            yearRange.StartYear = START_YEAR - 1; // We may want player values from previous season
-            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker, _logger);
-            await playerGetter.GetPlayers(yearRange);
-            _logger.LogTrace("Completed Player Getter");
         }
 	}
 }

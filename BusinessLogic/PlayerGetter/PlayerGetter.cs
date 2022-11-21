@@ -40,6 +40,7 @@ namespace BusinessLogic.PlayerGetter
                 var players = await GetPlayerValues(seasonStartYear);
                 await _playerRepo.AddUpdatePlayers(players);
                 numberOfPlayersAdded += players.Count();
+                _logger.LogInformation("Number of Players Added for Season " + seasonStartYear.ToString() + ": " + players.Count().ToString());
             }
             _logger.LogInformation("Number of Added Players: " + numberOfPlayersAdded.ToString());
         }

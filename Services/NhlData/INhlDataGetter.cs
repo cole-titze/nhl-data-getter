@@ -8,4 +8,3 @@ namespace Services.NhlData
         int GetFullSeasonId(int seasonStartYear);
     }
 }
-

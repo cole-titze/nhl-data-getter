@@ -28,7 +28,6 @@ namespace DataAccess.GameRepository
         public async Task AddGames(List<DbGame> games)
         {
             await _dbContext.Game.AddRangeAsync(games);
-            await _dbContext.SaveChangesAsync();
         }
         /// <summary>
         /// Gets a seasons worth of games and stores them in the cache variable
@@ -50,6 +49,25 @@ namespace DataAccess.GameRepository
             if (game == null)
                 return false;
             return true;
+        }
+        /// <summary>
+        /// Adds player rosters to the database
+        /// </summary>
+        /// <param name="rosters">List of players mapped to games</param>
+        /// <returns>None</returns>
+        public async Task AddRosters(List<DbGamePlayer> rosters)
+        {
+            var newRoster = rosters.GroupBy(x => new { x.gameId, x.playerId}).Select(x => x.First()).ToList(); //Remove duplicates if player played multiple positions in game
+
+            await _dbContext.GamePlayer.AddRangeAsync(newRoster);
+        }
+        /// <summary>
+        /// Saves Database changes
+        /// </summary>
+        /// <returns>None</returns>
+        public async Task Commit()
+        {
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

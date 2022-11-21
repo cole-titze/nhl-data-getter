@@ -22,10 +22,10 @@ namespace BusinessLogic.GameGetter
         /// </summary>
         public async Task GetGames(YearRange seasonYearRange)
         {
-            int numberOfGamesAdded;
+            int numberOfGamesAdded = 0;
+            int numberOfPlayersAdded = 0;
             for (int seasonStartYear = seasonYearRange.StartYear; seasonStartYear <= seasonYearRange.EndYear; seasonStartYear++)
             {
-                numberOfGamesAdded = 0;
                 if (await SeasonGamesExist(seasonStartYear))
                 {
                     _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
@@ -35,9 +35,35 @@ namespace BusinessLogic.GameGetter
                 var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
                 var seasonGames = await GetSeasonGames(seasonStartYear, seasonGameCount);
                 await _gameRepo.AddGames(seasonGames);
-                _logger.LogInformation("Number of Games Added To Season" + seasonStartYear.ToString() + ": " + numberOfGamesAdded.ToString());
+                var seasonRosters = await GetGameRosters(seasonGames);
+                await _gameRepo.AddRosters(seasonRosters);
+                await _gameRepo.Commit();
+
+                numberOfPlayersAdded += seasonRosters.Count();
+                numberOfGamesAdded += seasonGames.Count();
+
+                _logger.LogInformation("Number of Players Added To Season " + seasonStartYear.ToString() + ": " + seasonRosters.Count().ToString());
+                _logger.LogInformation("Number of Games Added To Season " + seasonStartYear.ToString() + ": " + seasonGames.Count().ToString());
             }
+            _logger.LogInformation("Number of Total Players Added: " + numberOfPlayersAdded.ToString());
+            _logger.LogInformation("Number of Total Games Added: " + numberOfGamesAdded.ToString());
         }
+        /// <summary>
+        /// Retrieves rosters for all games
+        /// </summary>
+        /// <param name="seasonGames">Season games</param>
+        /// <returns>List of player rosters</returns>
+        private async Task<List<DbGamePlayer>> GetGameRosters(List<DbGame> seasonGames)
+        {
+            var rosters = new List<DbGamePlayer>();
+            foreach(var game in seasonGames)
+            {
+                var players = await _nhlDataGetter.GetGameRoster(game);
+                rosters.AddRange(players);
+            }
+            return rosters;
+        }
+
         /// <summary>
         /// Gets if all of a seasons games are already found
         /// </summary>

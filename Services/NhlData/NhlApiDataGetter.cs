@@ -2,6 +2,7 @@
 using Services.RequestMaker;
 using Services.NhlData.Mappers;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Services.NhlData
 {
@@ -24,7 +25,6 @@ namespace Services.NhlData
         /// <param name="seasonstartYear">Year to use in id</param>
         /// <param name="gameNumber">Game number to use in id</param>
         /// <returns>The internal game id</returns>
-        /// <exception cref="NotImplementedException"></exception>
         public int GetGameIdFrom(int seasonstartYear, int gameNumber)
         {
             return (seasonstartYear * 1000000) + 20000 + gameNumber;
@@ -34,7 +34,6 @@ namespace Services.NhlData
         /// </summary>
         /// <param name="seasonStartYear"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public int GetFullSeasonId(int seasonStartYear)
         {
             int nextYear = seasonStartYear + 1;
@@ -132,6 +131,28 @@ namespace Services.NhlData
 
     public partial class NhlApiDataGetter : INhlPlayerGetter
     {
+        /// <summary>
+        /// Gets a list of players mapped to games (DbGameRoster)
+        /// </summary>
+        /// <param name="game">Game to get players from</param>
+        /// <returns>List of players from the game</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        /// Example Request: http://statsapi.web.nhl.com/api/v1/game/2019020001/feed/live
+        public async Task<List<DbGamePlayer>> GetGameRoster(DbGame game)
+        {
+            string url = "http://statsapi.web.nhl.com/api/v1/game/" + game.id.ToString() + "/feed/live";
+            string query = "";
+
+            var rosterResponse = await _requestMaker.MakeRequest(url, query);
+            if (rosterResponse == null)
+            {
+                _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
+                return new List<DbGamePlayer>();
+            }
+
+            return MapRosterResponseToGameRoster.Map(rosterResponse);
+        }
+
         /// <summary>
         /// Gets a list of player ids for a team in a given season
         /// </summary>
