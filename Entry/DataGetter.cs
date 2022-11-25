@@ -27,6 +27,7 @@ namespace Entry
         /// <returns>None</returns>
         public async Task Main(string gamesConnectionString)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             Trace.Listeners.Add(new TextWriterTraceListener(Console.Out));
 
             var nhlDbContext = new NhlDbContext(gamesConnectionString);
@@ -45,7 +46,11 @@ namespace Entry
             _logger.LogTrace("Starting Game Getter");
             var gameGetter = new GameGetter(gameRepo, nhlRequestMaker, _logger);
             await gameGetter.GetGames(yearRange);
-            _logger.LogTrace("Completed Game Getter");
+
+            watch.Stop();
+            var elapsedTime = watch.Elapsed;
+            var minutes = elapsedTime.TotalMinutes.ToString();
+            _logger.LogTrace("Completed Game Getter in " + minutes + " minutes");
         }
 	}
 }

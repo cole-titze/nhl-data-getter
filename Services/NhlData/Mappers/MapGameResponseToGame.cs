@@ -40,7 +40,7 @@ namespace Services.NhlData.Mappers
                 winner = (int)GetWinner((int)homeTeam.goals, (int)awayTeam.goals),
                 seasonStartYear = GetSeason((string)message.gameData.game.season),
                 gameDate = DateTime.Parse((string)message.gameData.datetime.dateTime),
-                hasBeenPlayed = true
+                hasBeenPlayed = (message.gameData.status.detailedState == "Final") ? true : false,
             };
             return game;
         }

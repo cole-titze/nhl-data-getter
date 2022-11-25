@@ -6,12 +6,31 @@ namespace Services.NhlData.Mappers
 {
 	public static class MapRosterResponseToGameRoster
 	{
+        public static List<DbGamePlayer> MapTeamRoster(dynamic rosterResponse, DbGame game, int teamId)
+        {
+            var roster = new List<DbGamePlayer>();
+            if (InvalidTeam(rosterResponse))
+                return roster;
+
+            foreach(var player in rosterResponse.roster)
+            {
+                roster.Add(new DbGamePlayer()
+                {
+                    gameId = game.id,
+                    teamId = teamId,
+                    playerId = player.person.id,
+                    seasonStartYear = game.seasonStartYear,
+                });
+            }
+
+            return roster;
+        }
         /// <summary>
         /// Maps a roster response to a roster
         /// </summary>
         /// <param name="rosterResponse">Roster response</param>
         /// <returns>List of players mapped to the game</returns>
-        public static List<DbGamePlayer> Map(dynamic rosterResponse)
+        public static List<DbGamePlayer> MapPlayedGame(dynamic rosterResponse)
         {
             var roster = new List<DbGamePlayer>();
             if (InvalidTeam(rosterResponse))

@@ -5,11 +5,12 @@ namespace DataAccess.GameRepository
 {
     public interface IGameRepository
     {
-        Task AddGames(List<DbGame> seasonGames);
-        Task AddRosters(List<DbGamePlayer> seasonGames);
+        Task AddUpdateGames(List<DbGame> seasonGames);
+        Task AddUpdateRosters(Dictionary<int, List<DbGamePlayer>> rosters);
         Task CacheSeasonOfGames(int seasonStartYear);
         Task Commit();
         bool GameExistsInCache(int gameId);
+        DbGame GetGame(int gameId);
         Task<int> GetGameCountInSeason(int year);
     }
 }

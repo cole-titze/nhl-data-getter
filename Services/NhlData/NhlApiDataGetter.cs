@@ -71,12 +71,10 @@ namespace Services.NhlData
         /// <returns></returns>
         private bool InvalidGame(dynamic message)
         {
-            if (message.gameData.status.detailedState != "Final")
+            if (message.gameData.status.detailedState != "Final" && message.gameData.status.detailedState != "Scheduled")
                 return true;
 
-            float homeFaceoffs = (float)message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.faceOffWinPercentage;
-            float awayFaceoffs = (float)message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.faceOffWinPercentage;
-            return (homeFaceoffs == 0 && awayFaceoffs == 0);
+            return false;
         }
         /// <summary>
         /// Creates the game query
@@ -131,6 +129,7 @@ namespace Services.NhlData
 
     public partial class NhlApiDataGetter : INhlPlayerGetter
     {
+        private Dictionary<int, List<DbGamePlayer>> _cachedTeamRoster = new Dictionary<int, List<DbGamePlayer>>();
         /// <summary>
         /// Gets a list of players mapped to games (DbGameRoster)
         /// </summary>
@@ -149,8 +148,48 @@ namespace Services.NhlData
                 _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
                 return new List<DbGamePlayer>();
             }
+            List<DbGamePlayer> players = MapRosterResponseToGameRoster.MapPlayedGame(rosterResponse);
 
-            return MapRosterResponseToGameRoster.Map(rosterResponse);
+            if(players.Count() == 0)
+            {
+                if (_cachedTeamRoster.ContainsKey(game.homeTeamId))
+                {
+                    players.AddRange(_cachedTeamRoster[game.homeTeamId]);
+                }
+                else
+                {
+                    url = "https://statsapi.web.nhl.com/api/v1/teams/" + game.homeTeamId.ToString() + "/roster";
+                    var homeResponse = await _requestMaker.MakeRequest(url, query);
+                    if (homeResponse == null)
+                    {
+                        _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
+                        return new List<DbGamePlayer>();
+                    }
+                    var teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(homeResponse, game, game.homeTeamId);
+                    players.AddRange(teamRoster);
+                    _cachedTeamRoster.Add(game.homeTeamId, teamRoster);
+                }
+                if (_cachedTeamRoster.ContainsKey(game.awayTeamId))
+                {
+                    players.AddRange(_cachedTeamRoster[game.awayTeamId]);
+                }
+                else
+                {
+                    url = "https://statsapi.web.nhl.com/api/v1/teams/" + game.awayTeamId.ToString() + "/roster";
+                    var awayResponse = await _requestMaker.MakeRequest(url, query);
+
+                    if (awayResponse == null)
+                    {
+                        _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
+                        return new List<DbGamePlayer>();
+                    }
+                    var teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(awayResponse, game, game.awayTeamId);
+                    players.AddRange(teamRoster);
+                    _cachedTeamRoster.Add(game.awayTeamId, teamRoster);
+                }
+            }
+
+            return players;
         }
 
         /// <summary>
