@@ -139,6 +139,69 @@ namespace Services.NhlData
         /// Example Request: http://statsapi.web.nhl.com/api/v1/game/2019020001/feed/live
         public async Task<List<DbGamePlayer>> GetGameRoster(DbGame game)
         {
+            List<DbGamePlayer> players = await GetPastGameRoster(game);
+
+            if(players.Count() == 0)
+            {
+                players = await GetCurrentTeamRosters(game);
+            }
+
+            return players;
+        }
+        /// <summary>
+        /// Get the current team roster
+        /// </summary>
+        /// <param name="game">Game to get rosters of</param>
+        /// <returns>List of players that will play in the game</returns>
+        private async Task<List<DbGamePlayer>> GetCurrentTeamRosters(DbGame game)
+        {
+            List<DbGamePlayer> players = new List<DbGamePlayer>();
+
+            players.AddRange(await GetTeamRoster(game, game.homeTeamId));
+            players.AddRange(await GetTeamRoster(game, game.awayTeamId));
+
+            return players;
+        }
+
+        /// <summary>
+        /// Gets roster for given team and game.
+        /// </summary>
+        /// <param name="game">Game to get players for</param>
+        /// <param name="teamId">Team to get players for</param>
+        /// <returns>List of players that played for the team</returns>
+        private async Task<List<DbGamePlayer>> GetTeamRoster(DbGame game, int teamId)
+        {
+            var players = new List<DbGamePlayer>();
+            string url = "";
+            string query = "";
+
+            if (_cachedTeamRoster.ContainsKey(game.homeTeamId))
+            {
+                players.AddRange(_cachedTeamRoster[game.homeTeamId]);
+            }
+            else
+            {
+                url = "https://statsapi.web.nhl.com/api/v1/teams/" + teamId.ToString() + "/roster";
+                var homeResponse = await _requestMaker.MakeRequest(url, query);
+                if (homeResponse == null)
+                {
+                    _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
+                    return new List<DbGamePlayer>();
+                }
+                var teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(homeResponse, game, teamId);
+                players.AddRange(teamRoster);
+                _cachedTeamRoster.Add(teamId, teamRoster);
+            }
+            return players;
+        }
+
+        /// <summary>
+        /// Gets roster for games that have already been played.
+        /// </summary>
+        /// <param name="game">The game to get the roster of</param>
+        /// <returns>List of players from a game</returns>
+        private async Task<List<DbGamePlayer>> GetPastGameRoster(DbGame game)
+        {
             string url = "http://statsapi.web.nhl.com/api/v1/game/" + game.id.ToString() + "/feed/live";
             string query = "";
 
@@ -148,48 +211,7 @@ namespace Services.NhlData
                 _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
                 return new List<DbGamePlayer>();
             }
-            List<DbGamePlayer> players = MapRosterResponseToGameRoster.MapPlayedGame(rosterResponse);
-
-            if(players.Count() == 0)
-            {
-                if (_cachedTeamRoster.ContainsKey(game.homeTeamId))
-                {
-                    players.AddRange(_cachedTeamRoster[game.homeTeamId]);
-                }
-                else
-                {
-                    url = "https://statsapi.web.nhl.com/api/v1/teams/" + game.homeTeamId.ToString() + "/roster";
-                    var homeResponse = await _requestMaker.MakeRequest(url, query);
-                    if (homeResponse == null)
-                    {
-                        _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
-                        return new List<DbGamePlayer>();
-                    }
-                    var teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(homeResponse, game, game.homeTeamId);
-                    players.AddRange(teamRoster);
-                    _cachedTeamRoster.Add(game.homeTeamId, teamRoster);
-                }
-                if (_cachedTeamRoster.ContainsKey(game.awayTeamId))
-                {
-                    players.AddRange(_cachedTeamRoster[game.awayTeamId]);
-                }
-                else
-                {
-                    url = "https://statsapi.web.nhl.com/api/v1/teams/" + game.awayTeamId.ToString() + "/roster";
-                    var awayResponse = await _requestMaker.MakeRequest(url, query);
-
-                    if (awayResponse == null)
-                    {
-                        _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
-                        return new List<DbGamePlayer>();
-                    }
-                    var teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(awayResponse, game, game.awayTeamId);
-                    players.AddRange(teamRoster);
-                    _cachedTeamRoster.Add(game.awayTeamId, teamRoster);
-                }
-            }
-
-            return players;
+            return MapRosterResponseToGameRoster.MapPlayedGame(rosterResponse);
         }
 
         /// <summary>
