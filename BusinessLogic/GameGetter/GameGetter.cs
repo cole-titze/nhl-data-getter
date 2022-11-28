@@ -11,12 +11,12 @@ namespace BusinessLogic.GameGetter
 	{
         private readonly IGameRepository _gameRepo;
         private readonly INhlDataGetter _nhlDataGetter;
-        private readonly ILogger _logger;
-        public GameGetter(IGameRepository gameRepository, INhlDataGetter nhlDataGetter, ILogger logger)
+        private readonly ILogger<GameGetter> _logger;
+        public GameGetter(IGameRepository gameRepository, INhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
         {
             _gameRepo = gameRepository;
             _nhlDataGetter = nhlDataGetter;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<GameGetter>();
         }
         /// <summary>
         /// Gets all nhl games within the season range. If the game is already in the database, it is skipped.

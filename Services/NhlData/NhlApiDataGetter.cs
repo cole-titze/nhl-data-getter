@@ -10,14 +10,14 @@ namespace Services.NhlData
     public partial class NhlApiDataGetter : INhlDataGetter
     {
         private readonly IRequestMaker _requestMaker;
-        private readonly ILogger _logger;
+        private readonly ILogger<NhlApiDataGetter> _logger;
         private const int DEFAULT_GAME_COUNT = 1400;
         private const string SEASON_TYPE = "02"; // 02 is the regular season id for nhl api
         private Dictionary<int, int> _seasonGameCountCache = new Dictionary<int, int>();
-        public NhlApiDataGetter(IRequestMaker requestMaker, ILogger logger)
+        public NhlApiDataGetter(IRequestMaker requestMaker, ILoggerFactory loggerFactory)
         {
             _requestMaker = requestMaker;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<NhlApiDataGetter>();
         }
         /// <summary>
         /// Builds a game id to the nhl api standard "year""gameType"""gameId"

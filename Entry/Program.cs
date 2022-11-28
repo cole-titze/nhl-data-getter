@@ -11,9 +11,9 @@ ServiceProvider serviceProvider = new ServiceCollection()
         )
     .BuildServiceProvider();
 
-var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
-var dataGetter = new DataGetter(logger);
+var dataGetter = new DataGetter(loggerFactory);
 string? gamesConnectionString = Environment.GetEnvironmentVariable("NHL_DATABASE");
 
 if (gamesConnectionString == null)

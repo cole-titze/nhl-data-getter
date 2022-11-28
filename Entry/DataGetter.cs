@@ -14,11 +14,13 @@ namespace Entry
 	public class DataGetter
 	{
         private const int START_YEAR = 2010;
-        private readonly ILogger _logger;
+        private readonly ILogger<DataGetter> _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
-        public DataGetter(ILogger logger)
+        public DataGetter(ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<DataGetter>();
+            _loggerFactory = loggerFactory;
         }
         /// <summary>
         /// Gets and stores all new games and player values.
@@ -34,17 +36,17 @@ namespace Entry
             var playerRepo = new PlayerRepository(nhlDbContext);
             var gameRepo = new GameRepository(nhlDbContext);
             var requestMaker = new RequestMaker();
-            var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _logger);
+            var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _loggerFactory);
             var yearRange = new YearRange(START_YEAR, DateTime.Now);
             var playerYearRange = new YearRange(START_YEAR - 1, DateTime.Now); // We use player values from previous season for team ratings
 
             _logger.LogTrace("Starting Player Getter");
-            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker, _logger);
+            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker, _loggerFactory);
             await playerGetter.GetPlayers(playerYearRange);
             _logger.LogTrace("Completed Player Getter");
 
             _logger.LogTrace("Starting Game Getter");
-            var gameGetter = new GameGetter(gameRepo, nhlRequestMaker, _logger);
+            var gameGetter = new GameGetter(gameRepo, nhlRequestMaker, _loggerFactory);
             await gameGetter.GetGames(yearRange);
 
             watch.Stop();

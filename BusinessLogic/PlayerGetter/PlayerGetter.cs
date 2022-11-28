@@ -12,12 +12,12 @@ namespace BusinessLogic.PlayerGetter
         private const int PLAYER_CUTOFF = 300;
         private readonly IPlayerRepository _playerRepo;
         private readonly INhlDataGetter _nhlDataGetter;
-        private readonly ILogger _logger;
-        public PlayerGetter(IPlayerRepository playerRepo, INhlDataGetter nhlDataGetter, ILogger logger)
+        private readonly ILogger<PlayerGetter> _logger;
+        public PlayerGetter(IPlayerRepository playerRepo, INhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
 		{
 			_playerRepo = playerRepo;
 			_nhlDataGetter = nhlDataGetter;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<PlayerGetter>();
 		}
         /// <summary>
         /// Gets all players and their values for a season range and stores to db
