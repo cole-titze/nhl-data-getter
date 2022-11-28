@@ -9,7 +9,7 @@ namespace Services.NhlData
 		Task<List<int>> GetTeamsForSeason(int seasonStartYear);
         Task<List<int>> GetPlayerIdsForTeamBySeason(int seasonStartYear, int teamId);
         Task<DbPlayer> GetPlayerValueBySeason(int playerId, int seasonStartYear);
-        Task<List<DbGamePlayer>> GetGameRoster(DbGame game);
+        Task<Roster> GetGameRoster(DbGame game);
     }
 }
 

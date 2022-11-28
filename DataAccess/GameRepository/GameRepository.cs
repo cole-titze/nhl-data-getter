@@ -1,4 +1,5 @@
 ﻿using Entities.DbModels;
+using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.GameRepository
@@ -69,7 +70,7 @@ namespace DataAccess.GameRepository
         /// </summary>
         /// <param name="rosters">List of players mapped to games</param>
         /// <returns>None</returns>
-        public async Task AddUpdateRosters(Dictionary<int, List<DbGamePlayer>> rosters)
+        public async Task AddUpdateRosters(Dictionary<int, Roster> rosters)
         {
             List<DbGamePlayer> oldRosters = new List<DbGamePlayer>();
             foreach(var key in rosters.Keys)
@@ -78,22 +79,39 @@ namespace DataAccess.GameRepository
             }
 
             var addList = new List<DbGamePlayer>();
-            DbGamePlayer? dbPlayer;
             foreach (var roster in rosters)
             {
-                foreach(var player in roster.Value)
+                foreach(var player in roster.Value.homeTeam)
                 {
-                    dbPlayer = oldRosters.FirstOrDefault(x => x.gameId == player.gameId && x.playerId == player.playerId);
-                    if (dbPlayer == null)
-                        addList.Add(player);
-                    else
-                        oldRosters.Remove(player);
+                    BuildDbRoster(addList, oldRosters, player);
+                }
+                foreach (var player in roster.Value.awayTeam)
+                {
+                    BuildDbRoster(addList, oldRosters, player);
                 }
             }
 
             await _dbContext.GamePlayer.AddRangeAsync(addList);
             _dbContext.GamePlayer.RemoveRange(oldRosters);
         }
+
+        /// <summary>
+        /// Determines what players should be added and removed
+        /// </summary>
+        /// <param name="addList">List of players to add (reference)</param>
+        /// <param name="oldRosters">List of players to remove (reference)</param>
+        /// <param name="player">The player to check</param>
+        private void BuildDbRoster(List<DbGamePlayer> addList, List<DbGamePlayer> oldRosters, DbGamePlayer player)
+        {
+            DbGamePlayer? dbPlayer;
+
+            dbPlayer = oldRosters.FirstOrDefault(x => x.gameId == player.gameId && x.playerId == player.playerId);
+            if (dbPlayer == null)
+                addList.Add(player);
+            else
+                oldRosters.Remove(player);
+        }
+
         /// <summary>
         /// Saves Database changes
         /// </summary>

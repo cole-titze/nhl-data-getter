@@ -3,6 +3,7 @@ using Services.RequestMaker;
 using Services.NhlData.Mappers;
 using Microsoft.Extensions.Logging;
 using System;
+using Entities.Models;
 
 namespace Services.NhlData
 {
@@ -137,11 +138,11 @@ namespace Services.NhlData
         /// <returns>List of players from the game</returns>
         /// <exception cref="NotImplementedException"></exception>
         /// Example Request: http://statsapi.web.nhl.com/api/v1/game/2019020001/feed/live
-        public async Task<List<DbGamePlayer>> GetGameRoster(DbGame game)
+        public async Task<Roster> GetGameRoster(DbGame game)
         {
-            List<DbGamePlayer> players = await GetPastGameRoster(game);
+            Roster players = await GetPastGameRoster(game);
 
-            if(players.Count() == 0)
+            if(players.homeTeam.Count() == 0 && players.awayTeam.Count() == 0)
             {
                 players = await GetCurrentTeamRosters(game);
             }
@@ -153,12 +154,12 @@ namespace Services.NhlData
         /// </summary>
         /// <param name="game">Game to get rosters of</param>
         /// <returns>List of players that will play in the game</returns>
-        private async Task<List<DbGamePlayer>> GetCurrentTeamRosters(DbGame game)
+        private async Task<Roster> GetCurrentTeamRosters(DbGame game)
         {
-            List<DbGamePlayer> players = new List<DbGamePlayer>();
+            Roster players = new Roster();
 
-            players.AddRange(await GetTeamRoster(game, game.homeTeamId));
-            players.AddRange(await GetTeamRoster(game, game.awayTeamId));
+            players.homeTeam = await GetTeamRoster(game, game.homeTeamId);
+            players.awayTeam =await GetTeamRoster(game, game.awayTeamId);
 
             return players;
         }
@@ -200,7 +201,7 @@ namespace Services.NhlData
         /// </summary>
         /// <param name="game">The game to get the roster of</param>
         /// <returns>List of players from a game</returns>
-        private async Task<List<DbGamePlayer>> GetPastGameRoster(DbGame game)
+        private async Task<Roster> GetPastGameRoster(DbGame game)
         {
             string url = "http://statsapi.web.nhl.com/api/v1/game/" + game.id.ToString() + "/feed/live";
             string query = "";
@@ -209,7 +210,7 @@ namespace Services.NhlData
             if (rosterResponse == null)
             {
                 _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
-                return new List<DbGamePlayer>();
+                return new Roster();
             }
             return MapRosterResponseToGameRoster.MapPlayedGame(rosterResponse);
         }

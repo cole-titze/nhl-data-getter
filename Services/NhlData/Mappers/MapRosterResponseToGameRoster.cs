@@ -30,9 +30,9 @@ namespace Services.NhlData.Mappers
         /// </summary>
         /// <param name="rosterResponse">Roster response</param>
         /// <returns>List of players mapped to the game</returns>
-        public static List<DbGamePlayer> MapPlayedGame(dynamic rosterResponse)
+        public static Roster MapPlayedGame(dynamic rosterResponse)
         {
-            var roster = new List<DbGamePlayer>();
+            var roster = new Roster();
             if (InvalidTeam(rosterResponse))
                 return roster;
 
@@ -46,7 +46,7 @@ namespace Services.NhlData.Mappers
             var awayPlayers = rosterResponse.liveData.boxscore.teams.away.skaters;
             foreach (var playerId in homePlayers)
             {
-                roster.Add(new DbGamePlayer()
+                roster.homeTeam.Add(new DbGamePlayer()
                 {
                     playerId = (int)playerId,
                     teamId = homeTeamId,
@@ -56,7 +56,7 @@ namespace Services.NhlData.Mappers
             }
             foreach (var playerId in awayPlayers)
             {
-                roster.Add(new DbGamePlayer()
+                roster.awayTeam.Add(new DbGamePlayer()
                 {
                     playerId = (int)playerId,
                     teamId = awayTeamId,
@@ -69,7 +69,7 @@ namespace Services.NhlData.Mappers
             var awayGoalies = rosterResponse.liveData.boxscore.teams.away.goalies;
             foreach (var playerId in homeGoalies)
             {
-                roster.Add(new DbGamePlayer()
+                roster.homeTeam.Add(new DbGamePlayer()
                 {
                     playerId = (int)playerId,
                     teamId = homeTeamId,
@@ -79,7 +79,7 @@ namespace Services.NhlData.Mappers
             }
             foreach (var playerId in awayGoalies)
             {
-                roster.Add(new DbGamePlayer()
+                roster.awayTeam.Add(new DbGamePlayer()
                 {
                     playerId = (int)playerId,
                     teamId = awayTeamId,

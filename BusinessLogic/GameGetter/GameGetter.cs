@@ -1,5 +1,6 @@
 ﻿using DataAccess.GameRepository;
 using Entities.DbModels;
+using Entities.Models;
 using Entities.Types;
 using Microsoft.Extensions.Logging;
 using Services.NhlData;
@@ -49,18 +50,19 @@ namespace BusinessLogic.GameGetter
         /// </summary>
         /// <param name="seasonGames">Season games</param>
         /// <returns>List of player rosters</returns>
-        private async Task<Dictionary<int,List<DbGamePlayer>>> GetGameRosters(List<DbGame> seasonGames)
+        private async Task<Dictionary<int,Roster>> GetGameRosters(List<DbGame> seasonGames)
         {
-            var rosters = new Dictionary<int, List<DbGamePlayer>>();
-            List<DbGamePlayer> players;
+            var rosters = new Dictionary<int, Roster>();
+            Roster players;
             foreach(var game in seasonGames)
             {
-                rosters.Add(game.id, new List<DbGamePlayer>());
+                rosters.Add(game.id, new Roster());
 
                 players = await _nhlDataGetter.GetGameRoster(game);
-                players = players.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList(); //Remove duplicates if player played multiple
+                players.homeTeam = players.homeTeam.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList(); //Remove duplicates if player played multiple
+                players.awayTeam = players.homeTeam.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList();
 
-                rosters[game.id].AddRange(players);
+                rosters[game.id] = players;
             }
             return rosters;
         }
