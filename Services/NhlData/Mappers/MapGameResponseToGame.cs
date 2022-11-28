@@ -37,7 +37,7 @@ namespace Services.NhlData.Mappers
                 awayTakeaways = (int)awayTeam.takeaways,
                 homeGiveaways = (int)homeTeam.giveaways,
                 awayGiveaways = (int)awayTeam.giveaways,
-                winner = (int)GetWinner((int)homeTeam.goals, (int)awayTeam.goals),
+                winner = GetWinner((int)homeTeam.goals, (int)awayTeam.goals),
                 seasonStartYear = GetSeason((string)message.gameData.game.season),
                 gameDate = DateTime.Parse((string)message.gameData.datetime.dateTime),
                 hasBeenPlayed = (message.gameData.status.detailedState == "Final") ? true : false,

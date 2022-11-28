@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Entities.DbModels;
+using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess

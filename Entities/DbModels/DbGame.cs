@@ -14,7 +14,7 @@
         public DateTime gameDate { get; set; }
         public int homeGoals { get; set; }
         public int awayGoals { get; set; }
-        public int winner { get; set; }
+        public Winner winner { get; set; }
         public int homeSOG { get; set; }
         public int awaySOG { get; set; }
         public int homePPG { get; set; }
