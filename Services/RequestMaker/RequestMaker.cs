@@ -1,10 +1,12 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace Services.RequestMaker
 {
 	public class RequestMaker : IRequestMaker
 	{
+        private static HttpClient _client = new HttpClient();
         /// <summary>
         /// Given a url and query makes a request and returns the response converted to a dynamic object
         /// </summary>
@@ -14,14 +16,15 @@ namespace Services.RequestMaker
         public async Task<dynamic?> MakeRequest(string url, string query)
         {
             HttpResponseMessage response;
-            using (var client = new HttpClient())
+            HttpRequestMessage msg = new HttpRequestMessage
             {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url + query),
+            };
+            msg.Headers.Accept.Clear();
+            msg.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                response = await client.GetAsync(query);
-            }
+            response = await _client.SendAsync(msg);
             
             return await ParseResponse(response);
         }
