@@ -14,10 +14,11 @@ namespace Services.NhlData
         private const int DEFAULT_GAME_COUNT = 1400;
         private const string SEASON_TYPE = "02"; // 02 is the regular season id for nhl api
         private Dictionary<int, int> _seasonGameCountCache = new Dictionary<int, int>();
-        public NhlApiDataGetter(IRequestMaker requestMaker, ILoggerFactory loggerFactory)
+        public NhlApiDataGetter(IRequestMaker requestMaker, ILoggerFactory loggerFactory, Dictionary<int, int> seasonGameCountCache)
         {
             _requestMaker = requestMaker;
             _logger = loggerFactory.CreateLogger<NhlApiDataGetter>();
+            _seasonGameCountCache = seasonGameCountCache;
         }
         /// <summary>
         /// Builds a game id to the nhl api standard "year""gameType"""gameId"
@@ -39,6 +40,11 @@ namespace Services.NhlData
         {
             int nextYear = seasonStartYear + 1;
             return (seasonStartYear * 10000) + nextYear;
+        }
+
+        public Dictionary<int, int> GetSeasonGameCounts()
+        {
+            return _seasonGameCountCache;
         }
     }
 

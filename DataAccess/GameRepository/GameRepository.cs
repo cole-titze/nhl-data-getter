@@ -129,6 +129,34 @@ namespace DataAccess.GameRepository
 
             return game;
         }
+
+        public async Task<Dictionary<int, int>> GetSeasonGameCounts()
+        {
+            var seasonGameCountCache = new Dictionary<int, int>();
+            var seasonGameCounts = await _dbContext.SeasonGameCount.ToListAsync();
+
+            foreach(var dbGameCount in seasonGameCounts)
+            {
+                seasonGameCountCache.Add(dbGameCount.seasonId, dbGameCount.gameCount);
+            }
+
+            return seasonGameCountCache;
+        }
+
+        public async Task AddSeasonGameCounts(Dictionary<int, int> seasonGameCountCache)
+        {
+            var seasonGameCounts = new List<DbSeasonGameCount>();
+
+            foreach(var key in seasonGameCountCache.Keys)
+            {
+                seasonGameCounts.Add(new DbSeasonGameCount(){
+                    seasonId = key,
+                    gameCount = seasonGameCountCache[key],
+                });
+            }
+
+            await _dbContext.SeasonGameCount.AddRangeAsync(seasonGameCounts);
+        }
     }
 }
 

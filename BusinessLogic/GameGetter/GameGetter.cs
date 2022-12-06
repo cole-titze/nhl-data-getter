@@ -26,11 +26,11 @@ namespace BusinessLogic.GameGetter
             int numberOfGamesAdded = 0;
             for (int seasonStartYear = seasonYearRange.StartYear; seasonStartYear <= seasonYearRange.EndYear; seasonStartYear++)
             {
-                if (await SeasonGamesExist(seasonStartYear) && seasonStartYear != seasonYearRange.EndYear)
-                {
-                    _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
-                    continue;
-                }
+                //if (await SeasonGamesExist(seasonStartYear) && seasonStartYear != seasonYearRange.EndYear)
+                //{
+                //    _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
+                //    continue;
+                //}
 
                 var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
                 var seasonGames = await GetSeasonGames(seasonStartYear, seasonGameCount);
@@ -43,6 +43,9 @@ namespace BusinessLogic.GameGetter
 
                 _logger.LogInformation("Number of Games Added To Season " + seasonStartYear.ToString() + ": " + seasonGames.Count().ToString());
             }
+            var seasonGameCountCache = _nhlDataGetter.GetSeasonGameCounts();
+            await _gameRepo.AddSeasonGameCounts(seasonGameCountCache);
+            await _gameRepo.Commit();
             _logger.LogInformation("Number of Total Games Added: " + numberOfGamesAdded.ToString());
         }
         /// <summary>

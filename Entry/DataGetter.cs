@@ -36,7 +36,10 @@ namespace Entry
             var playerRepo = new PlayerRepository(nhlDbContext);
             var gameRepo = new GameRepository(nhlDbContext);
             var requestMaker = new RequestMaker();
-            var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _loggerFactory);
+
+            var seasonGameCountCache = await gameRepo.GetSeasonGameCounts();
+
+            var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _loggerFactory, seasonGameCountCache);
             var yearRange = new YearRange(START_YEAR, DateTime.Now);
             var playerYearRange = new YearRange(START_YEAR - 1, DateTime.Now); // We use player values from previous season for team ratings
 
