@@ -43,6 +43,9 @@ namespace BusinessLogic.GameGetter
 
                 _logger.LogInformation("Number of Games Added To Season " + seasonStartYear.ToString() + ": " + seasonGames.Count().ToString());
             }
+            var seasonGameCountCache = _nhlDataGetter.GetSeasonGameCounts();
+            await _gameRepo.AddSeasonGameCounts(seasonGameCountCache);
+            await _gameRepo.Commit();
             _logger.LogInformation("Number of Total Games Added: " + numberOfGamesAdded.ToString());
         }
         /// <summary>

@@ -6,5 +6,6 @@ namespace Services.NhlData
     {
         int GetGameIdFrom(int seasonstartYear, int gameCount);
         int GetFullSeasonId(int seasonStartYear);
+        Dictionary<int, int> GetSeasonGameCounts();
     }
 }

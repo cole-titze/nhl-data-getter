@@ -15,6 +15,7 @@ namespace DataAccess
         public virtual DbSet<DbGame> Game { get; set; } = null!;
         public virtual DbSet<DbPlayer> PlayerValue { get; set; } = null!;
         public virtual DbSet<DbGamePlayer> GamePlayer { get; set; } = null!;
+        public virtual DbSet<DbSeasonGameCount> SeasonGameCount { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

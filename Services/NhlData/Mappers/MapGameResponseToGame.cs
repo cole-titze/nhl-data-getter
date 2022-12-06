@@ -42,6 +42,10 @@ namespace Services.NhlData.Mappers
                 gameDate = DateTime.Parse((string)message.gameData.datetime.dateTime),
                 hasBeenPlayed = (message.gameData.status.detailedState == "Final") ? true : false,
             };
+
+            if (game == null)
+                return new DbGame();
+
             return game;
         }
         /// <summary>
