@@ -26,11 +26,11 @@ namespace BusinessLogic.GameGetter
             int numberOfGamesAdded = 0;
             for (int seasonStartYear = seasonYearRange.StartYear; seasonStartYear <= seasonYearRange.EndYear; seasonStartYear++)
             {
-                //if (await SeasonGamesExist(seasonStartYear) && seasonStartYear != seasonYearRange.EndYear)
-                //{
-                //    _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
-                //    continue;
-                //}
+                if (await SeasonGamesExist(seasonStartYear) && seasonStartYear != seasonYearRange.EndYear)
+                {
+                    _logger.LogInformation("All game data for season " + seasonStartYear.ToString() + " already exists. Skipping...");
+                    continue;
+                }
 
                 var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
                 var seasonGames = await GetSeasonGames(seasonStartYear, seasonGameCount);
