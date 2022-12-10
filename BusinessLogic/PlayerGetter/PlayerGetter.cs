@@ -11,9 +11,9 @@ namespace BusinessLogic.PlayerGetter
 	{
         private const int PLAYER_CUTOFF = 300;
         private readonly IPlayerRepository _playerRepo;
-        private readonly INhlDataGetter _nhlDataGetter;
+        private readonly NhlDataGetter _nhlDataGetter;
         private readonly ILogger<PlayerGetter> _logger;
-        public PlayerGetter(IPlayerRepository playerRepo, INhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
+        public PlayerGetter(IPlayerRepository playerRepo, NhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
 		{
 			_playerRepo = playerRepo;
 			_nhlDataGetter = nhlDataGetter;
@@ -53,7 +53,7 @@ namespace BusinessLogic.PlayerGetter
         private async Task<List<DbPlayer>> GetPlayerValues(int seasonStartYear)
         {
             var seasonPlayers = new List<DbPlayer>();
-            var teamIds = await _nhlDataGetter.GetTeamsForSeason(seasonStartYear);
+            var teamIds = await _nhlDataGetter.ScheduleDataGetter.GetTeamsForSeason(seasonStartYear);
             foreach(var teamId in teamIds)
             {
                 var playersOnTeam = await GetPlayersOnTeamBySeason(seasonStartYear, teamId);
@@ -71,12 +71,12 @@ namespace BusinessLogic.PlayerGetter
         /// <returns>A list of players on the team</returns>
         private async Task<List<DbPlayer>> GetPlayersOnTeamBySeason(int seasonStartYear, int teamId)
         {
-            var playerIds = await _nhlDataGetter.GetPlayerIdsForTeamBySeason(seasonStartYear, teamId);
+            var playerIds = await _nhlDataGetter.PlayerDataGetter.GetPlayerIdsForTeamBySeason(seasonStartYear, teamId);
             DbPlayer playerValue;
             var playerValues = new List<DbPlayer>();
             foreach(var playerId in playerIds)
             {
-                playerValue = await _nhlDataGetter.GetPlayerValueBySeason(playerId, seasonStartYear);
+                playerValue = await _nhlDataGetter.PlayerDataGetter.GetPlayerValueBySeason(playerId, seasonStartYear);
                 playerValues.Add(playerValue);
             }
 

@@ -10,9 +10,9 @@ namespace BusinessLogic.GameGetter
 	public class GameGetter
 	{
         private readonly IGameRepository _gameRepo;
-        private readonly INhlDataGetter _nhlDataGetter;
+        private readonly NhlDataGetter _nhlDataGetter;
         private readonly ILogger<GameGetter> _logger;
-        public GameGetter(IGameRepository gameRepository, INhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
+        public GameGetter(IGameRepository gameRepository, NhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
         {
             _gameRepo = gameRepository;
             _nhlDataGetter = nhlDataGetter;
@@ -32,7 +32,7 @@ namespace BusinessLogic.GameGetter
                     continue;
                 }
 
-                var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
+                var seasonGameCount = await _nhlDataGetter.ScheduleDataGetter.GetGameCountInSeason(seasonStartYear);
                 var seasonGames = await GetSeasonGames(seasonStartYear, seasonGameCount);
                 await _gameRepo.AddUpdateGames(seasonGames);
                 var seasonRosters = await GetGameRosters(seasonGames);
@@ -43,7 +43,7 @@ namespace BusinessLogic.GameGetter
 
                 _logger.LogInformation("Number of Games Added To Season " + seasonStartYear.ToString() + ": " + seasonGames.Count().ToString());
             }
-            var seasonGameCountCache = _nhlDataGetter.GetSeasonGameCounts();
+            var seasonGameCountCache = _nhlDataGetter.ScheduleDataGetter.GetSeasonGameCounts();
             await _gameRepo.AddSeasonGameCounts(seasonGameCountCache);
             await _gameRepo.Commit();
             _logger.LogInformation("Number of Total Games Added: " + numberOfGamesAdded.ToString());
@@ -61,7 +61,7 @@ namespace BusinessLogic.GameGetter
             {
                 rosters.Add(game.id, new Roster());
 
-                players = await _nhlDataGetter.GetGameRoster(game);
+                players = await _nhlDataGetter.PlayerDataGetter.GetGameRoster(game);
                 players.homeTeam = players.homeTeam.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList(); //Remove duplicates if player played multiple
                 players.awayTeam = players.homeTeam.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList();
 
@@ -78,7 +78,7 @@ namespace BusinessLogic.GameGetter
         private async Task<bool> SeasonGamesExist(int seasonStartYear)
         {
             var gameCount = await _gameRepo.GetGameCountInSeason(seasonStartYear);
-            var seasonGameCount = await _nhlDataGetter.GetGameCountInSeason(seasonStartYear);
+            var seasonGameCount = await _nhlDataGetter.ScheduleDataGetter.GetGameCountInSeason(seasonStartYear);
             return gameCount == seasonGameCount;
         }
 
@@ -97,12 +97,12 @@ namespace BusinessLogic.GameGetter
             // game ids start at 1
             for (int count = 1; count <= gameCount; count++)
             {
-                var gameId = _nhlDataGetter.GetGameIdFrom(seasonStartYear, count);
+                var gameId = NhlDataGetter.GetGameIdFrom(seasonStartYear, count);
                 game = _gameRepo.GetGame(gameId);
                 if (game.IsValid() && game.hasBeenPlayed)
                     continue;
 
-                game = await _nhlDataGetter.GetGame(gameId);
+                game = await _nhlDataGetter.GameDataGetter.GetGame(gameId);
                 if( game.IsValid())
                     seasonGames.Add(game);
             }

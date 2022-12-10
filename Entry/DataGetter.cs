@@ -38,8 +38,11 @@ namespace Entry
             var requestMaker = new RequestMaker();
 
             var seasonGameCountCache = await gameRepo.GetSeasonGameCounts();
+            INhlGameGetter gameDataGetter = new NhlGameGetter(requestMaker, _loggerFactory);
+            INhlScheduleGetter scheduleDataGetter = new NhlScheduleGetter(requestMaker, seasonGameCountCache, _loggerFactory);
+            INhlPlayerGetter playerDataGetter = new NhlPlayerGetter(requestMaker, _loggerFactory);
 
-            var nhlRequestMaker = new NhlApiDataGetter(requestMaker, _loggerFactory, seasonGameCountCache);
+            var nhlRequestMaker = new NhlDataGetter(gameDataGetter, playerDataGetter, scheduleDataGetter);
             var yearRange = new YearRange(START_YEAR, DateTime.Now);
             var playerYearRange = new YearRange(START_YEAR - 1, DateTime.Now); // We use player values from previous season for team ratings
 
