@@ -41,7 +41,10 @@ namespace Services.NhlData
             int nextYear = seasonStartYear + 1;
             return (seasonStartYear * 10000) + nextYear;
         }
-
+        /// <summary>
+        /// Gets the seasons game counts
+        /// </summary>
+        /// <returns>Dictionary of year mapped to game count</returns>
         public Dictionary<int, int> GetSeasonGameCounts()
         {
             return _seasonGameCountCache;

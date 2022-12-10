@@ -6,6 +6,13 @@ namespace Services.NhlData.Mappers
 {
 	public static class MapRosterResponseToGameRoster
 	{
+        /// <summary>
+        /// Maps the teams roster into GamePlayer objects
+        /// </summary>
+        /// <param name="rosterResponse">A response for an nhl team that holds a roster</param>
+        /// <param name="game">The game to build the players for</param>
+        /// <param name="teamId">The team the players belong to</param>
+        /// <returns>List of players in the game</returns>
         public static List<DbGamePlayer> MapTeamRoster(dynamic rosterResponse, DbGame game, int teamId)
         {
             var roster = new List<DbGamePlayer>();

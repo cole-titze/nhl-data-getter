@@ -7,6 +7,7 @@ namespace DataAccess.GameRepository
     public class GameRepository : IGameRepository
     {
         private List<DbGame> _cachedSeasonsGames = new List<DbGame>();
+        private Dictionary<int, int> _seasonGameCountCache = new Dictionary<int, int>();
         private readonly NhlDbContext _dbContext;
         public GameRepository(NhlDbContext dbContext)
         {
@@ -120,7 +121,11 @@ namespace DataAccess.GameRepository
         {
             await _dbContext.SaveChangesAsync();
         }
-
+        /// <summary>
+        /// Gets a game based on the id
+        /// </summary>
+        /// <param name="gameId">Id of the game to get</param>
+        /// <returns>Desired game</returns>
         public DbGame GetGame(int gameId)
         {
             var game = _cachedSeasonsGames.FirstOrDefault(x => x.id == gameId);
@@ -129,20 +134,29 @@ namespace DataAccess.GameRepository
 
             return game;
         }
-
+        /// <summary>
+        /// Gets the Season game counts. Caches the first call from the database.
+        /// </summary>
+        /// <returns>Dictionary of season key and game count value</returns>
         public async Task<Dictionary<int, int>> GetSeasonGameCounts()
         {
-            var seasonGameCountCache = new Dictionary<int, int>();
+            if (_seasonGameCountCache.Keys.Count != 0)
+                return _seasonGameCountCache;
+
             var seasonGameCounts = await _dbContext.SeasonGameCount.ToListAsync();
 
             foreach(var dbGameCount in seasonGameCounts)
             {
-                seasonGameCountCache.Add(dbGameCount.seasonId, dbGameCount.gameCount);
+                _seasonGameCountCache.Add(dbGameCount.seasonId, dbGameCount.gameCount);
             }
 
-            return seasonGameCountCache;
+            return _seasonGameCountCache;
         }
-
+        /// <summary>
+        /// Adds the season game counts to the database
+        /// </summary>
+        /// <param name="seasonGameCountCache">The dictionary of seasonGameCounts to add to the database if they don't exist</param>
+        /// <returns></returns>
         public async Task AddSeasonGameCounts(Dictionary<int, int> seasonGameCountCache)
         {
             var seasonGameCounts = new List<DbSeasonGameCount>();
