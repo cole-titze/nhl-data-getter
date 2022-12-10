@@ -6,14 +6,14 @@ namespace Services.NhlData.Mappers
 	public static class MapPlayerStatResponseToPlayer
 	{
         /// <summary>
-        /// Maps a player statistic response to a player
+        /// Builds a player stats object
         /// </summary>
         /// <param name="playerStatResponse">Player stat response</param>
-        /// <returns>Player object</returns>
-		public static DbPlayer Map(dynamic playerStatResponse)
+        /// <returns>Player stats object</returns>
+		public static IPlayerStats BuildPlayerStats(dynamic playerStatResponse)
 		{
             if (playerStatResponse.stats[0].splits.Count == 0)
-                return new DbPlayer();
+                return new PlayerStats();
             var rawPlayer = playerStatResponse.stats[0].splits[0].stat;
             IPlayerStats playerStats;
 
@@ -25,7 +25,7 @@ namespace Services.NhlData.Mappers
                     saves = rawPlayer.saves,
                     gamesStarted = rawPlayer.gamesStarted,
                 };
-                return MapPlayerStatsToPlayer(playerStats);
+                return playerStats;
             }
 
             playerStats =  new PlayerStats()
@@ -40,14 +40,14 @@ namespace Services.NhlData.Mappers
                 goals = rawPlayer.goals,
             };
 
-            return MapPlayerStatsToPlayer(playerStats);
+            return playerStats;
         }
         /// <summary>
         /// Maps player stats model to a db player
         /// </summary>
         /// <param name="playerStats">The player statistics</param>
         /// <returns>Player object</returns>
-        private static DbPlayer MapPlayerStatsToPlayer(IPlayerStats playerStats)
+        public static DbPlayer MapPlayerStatsToPlayer(IPlayerStats playerStats)
         {
             return new DbPlayer()
             {

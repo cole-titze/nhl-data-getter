@@ -1,6 +1,7 @@
 ﻿using System;
 using Entities.DbModels;
 using Entities.Models;
+using Entities.Types.Mappers;
 using Microsoft.Extensions.Logging;
 using Services.NhlData.Mappers;
 using Services.RequestMaker;
@@ -142,9 +143,6 @@ namespace Services.NhlData
                 return new DbPlayer();
             }
 
-            DbPlayer player = MapPlayerStatResponseToPlayer.Map(playerStatResponse);
-            player.seasonStartYear = seasonStartYear;
-
             query = "";
             var playerPositionResponse = await _requestMaker.MakeRequest(url, query);
             if (playerPositionResponse == null)
@@ -152,7 +150,10 @@ namespace Services.NhlData
                 _logger.LogWarning($"Player position request failed: player id: {playerId} year: {seasonStartYear}");
                 return new DbPlayer();
             }
-            player.position = MapPlayerBioResponseToPositionStr.Map(playerPositionResponse);
+            IPlayerStats playerStats = MapPlayerStatResponseToPlayer.BuildPlayerStats(playerStatResponse);
+            playerStats.position = MapPositionStrToPosition.Map(MapPlayerBioResponseToPositionStr.Map(playerPositionResponse));
+            DbPlayer player = MapPlayerStatResponseToPlayer.MapPlayerStatsToPlayer(playerStats);
+            player.seasonStartYear = seasonStartYear;
             player.name = MapPlayerBioResponseToName.Map(playerPositionResponse);
             player.id = playerId;
 

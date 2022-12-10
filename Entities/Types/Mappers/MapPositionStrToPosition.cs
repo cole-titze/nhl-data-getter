@@ -13,11 +13,11 @@ namespace Entities.Types.Mappers
                     playerPosition = POSITION.Goalie;
                     break;
 
-                case "L":
+                case "LW":
                     playerPosition = POSITION.LeftWing;
                     break;
 
-                case "R":
+                case "RW":
                     playerPosition = POSITION.RightWing;
                     break;
 
