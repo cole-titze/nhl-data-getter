@@ -25,8 +25,6 @@
     <None Remove="FluentAssertions" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="UnitTests\" />
-    <Folder Include="UnitTests\GameGetterTests\" />
-    <Folder Include="UnitTests\PlayerGetterTests\" />
+    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
   </ItemGroup>
 </Project>

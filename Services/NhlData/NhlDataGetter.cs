@@ -1,11 +1,4 @@
-﻿using Entities.DbModels;
-using Services.RequestMaker;
-using Services.NhlData.Mappers;
-using Microsoft.Extensions.Logging;
-using System;
-using Entities.Models;
-
-namespace Services.NhlData
+﻿namespace Services.NhlData
 {
     public class NhlDataGetter
     {
@@ -25,7 +18,7 @@ namespace Services.NhlData
         /// <param name="seasonstartYear">Year to use in id</param>
         /// <param name="gameNumber">Game number to use in id</param>
         /// <returns>The internal game id</returns>
-        public static int GetGameIdFrom(int seasonstartYear, int gameNumber)
+        public static int GetGameId(int seasonstartYear, int gameNumber)
         {
             return (seasonstartYear * 1000000) + 20000 + gameNumber;
         }

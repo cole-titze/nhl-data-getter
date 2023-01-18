@@ -21,7 +21,7 @@
         /// </summary>
         /// <param name="currentDate">The date to translate into a year</param>
         /// <returns>The current season start year by date</returns>
-        public int GetEndSeason(DateTime date)
+        private int GetEndSeason(DateTime date)
         {
             var endSeasonDate = new DateTime(date.Year, 09, 15);
             int currentSeasonYear;

@@ -1,9 +1,6 @@
-﻿using System;
-using Entities.Types;
-
-namespace Entities.Models
+﻿namespace Entities.Models
 {
-	public class GoalieStats : IPlayerStats
+    public class GoalieStats : IPlayerStats
 	{
         public int id { get; set; }
         public string name { get; set; } = string.Empty;

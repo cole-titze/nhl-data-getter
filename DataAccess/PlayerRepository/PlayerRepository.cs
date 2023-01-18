@@ -1,5 +1,4 @@
-﻿using DataAccess;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.PlayerRepository

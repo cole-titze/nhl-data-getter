@@ -1,7 +1,6 @@
-﻿using System;
-namespace Services.NhlData.Mappers
+﻿namespace Services.NhlData.Mappers
 {
-	public static class MapTeamResponseToTeamIds
+    public static class MapTeamResponseToTeamIds
 	{
 		/// <summary>
 		/// Maps the schedule request into a list of team ids
@@ -11,10 +10,9 @@ namespace Services.NhlData.Mappers
 		public static List<int> Map(dynamic teamResponse)
 		{
 			var teamIds = new List<int>();
-			int teamId;
 			foreach(var team in teamResponse.teams)
 			{
-				teamId = Convert.ToInt32(team.id);
+				int teamId = Convert.ToInt32(team.id);
 				teamIds.Add(teamId);
 			}
 

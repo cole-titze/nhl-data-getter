@@ -6,7 +6,7 @@ namespace Entities.Types.Mappers
 	{
         public static string Map(POSITION position)
         {
-            string positionStr;
+            string positionStr = "L";
             switch (position)
             {
                 case POSITION.Goalie:
@@ -27,10 +27,6 @@ namespace Entities.Types.Mappers
 
                 case POSITION.Defenseman:
                     positionStr = "D";
-                    break;
-
-                default:
-                    positionStr = "L";
                     break;
             }
 

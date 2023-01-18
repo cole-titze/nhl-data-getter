@@ -1,5 +1,4 @@
-﻿using System;
-using DataAccess.PlayerRepository;
+﻿using DataAccess.PlayerRepository;
 using Entities.DbModels;
 using Entities.Types;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,7 @@ using Services.NhlData;
 
 namespace BusinessLogic.PlayerGetter
 {
-	public class PlayerGetter
+    public class PlayerGetter
 	{
         private const int PLAYER_CUTOFF = 300;
         private readonly IPlayerRepository _playerRepo;
@@ -114,4 +113,3 @@ namespace BusinessLogic.PlayerGetter
         }
     }
 }
-

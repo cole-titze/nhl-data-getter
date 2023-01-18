@@ -1,12 +1,15 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace Services.RequestMaker
 {
-	public class RequestMaker : IRequestMaker
+    public class RequestMaker : IRequestMaker
 	{
-        private static HttpClient _client = new HttpClient();
+        private readonly IHttpClient _client;
+        public RequestMaker(IHttpClient client)
+        {
+            _client = client;
+        }
         /// <summary>
         /// Given a url and query makes a request and returns the response converted to a dynamic object
         /// </summary>

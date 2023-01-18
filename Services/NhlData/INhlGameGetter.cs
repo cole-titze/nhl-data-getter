@@ -1,9 +1,8 @@
-﻿using System;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 
 namespace Services.NhlData
 {
-	public interface INhlGameGetter
+    public interface INhlGameGetter
 	{
         Task<DbGame> GetGame(int gameId);
     }

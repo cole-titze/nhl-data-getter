@@ -1,10 +1,9 @@
-﻿using System;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 using Entities.Models;
 
 namespace Services.NhlData.Mappers
 {
-	public static class MapRosterResponseToGameRoster
+    public static class MapRosterResponseToGameRoster
 	{
         /// <summary>
         /// Maps the teams roster into GamePlayer objects
@@ -16,8 +15,6 @@ namespace Services.NhlData.Mappers
         public static List<DbGamePlayer> MapTeamRoster(dynamic rosterResponse, DbGame game, int teamId)
         {
             var roster = new List<DbGamePlayer>();
-            if (InvalidTeam(rosterResponse))
-                return roster;
 
             foreach(var player in rosterResponse.roster)
             {
@@ -40,8 +37,6 @@ namespace Services.NhlData.Mappers
         public static Roster MapPlayedGame(dynamic rosterResponse)
         {
             var roster = new Roster();
-            if (InvalidTeam(rosterResponse))
-                return roster;
 
             string rawSeason = (string)rosterResponse.gameData.game.season;
             var seasonStartYear = Convert.ToInt32(rawSeason.Substring(0, 4));
@@ -97,15 +92,6 @@ namespace Services.NhlData.Mappers
 
 
             return roster;
-        }
-        /// <summary>
-        /// Gets if a roster response is valid or not
-        /// </summary>
-        /// <param name="message">The roster response</param>
-        /// <returns>True if the response is invalid. False if the game is valid</returns>
-        private static bool InvalidTeam(dynamic message)
-        {
-			return message.message == "Object not found";
         }
     }
 }

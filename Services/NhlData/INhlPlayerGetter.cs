@@ -1,10 +1,9 @@
-﻿using System;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 using Entities.Models;
 
 namespace Services.NhlData
 {
-	public interface INhlPlayerGetter
+    public interface INhlPlayerGetter
 	{
         Task<List<int>> GetPlayerIdsForTeamBySeason(int seasonStartYear, int teamId);
         Task<DbPlayer> GetPlayerValueBySeason(int playerId, int seasonStartYear);

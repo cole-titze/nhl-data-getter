@@ -1,5 +1,6 @@
 ﻿using Entities.DbModels;
 using Entities.Models;
+using Entities.Types.Mappers;
 
 namespace Services.NhlData.Mappers
 {
@@ -52,6 +53,7 @@ namespace Services.NhlData.Mappers
             return new DbPlayer()
             {
                 value = playerStats.GetPlayerValue(),
+                position = MapPositionToPositionStr.Map(playerStats.position),
             };
         }
     }

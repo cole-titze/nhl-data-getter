@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace Entities.DbModels
+﻿namespace Entities.DbModels
 {
-	public class DbGamePlayer
+    public class DbGamePlayer
 	{
         public int gameId { get; set; }
         public int teamId { get; set; }

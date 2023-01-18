@@ -1,7 +1,4 @@
-﻿using Entities.Models;
-using Entities.Types;
-
-namespace Entities.Models
+﻿namespace Entities.Models
 {
     public class PlayerStats : IPlayerStats
     {

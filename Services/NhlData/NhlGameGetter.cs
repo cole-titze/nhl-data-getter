@@ -1,12 +1,11 @@
-﻿using System;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 using Microsoft.Extensions.Logging;
 using Services.NhlData.Mappers;
 using Services.RequestMaker;
 
 namespace Services.NhlData
 {
-	public class NhlGameGetter : INhlGameGetter
+    public class NhlGameGetter : INhlGameGetter
 	{
         private readonly IRequestMaker _requestMaker;
         private readonly ILogger<NhlGameGetter> _logger;
@@ -23,7 +22,7 @@ namespace Services.NhlData
         /// <returns>A game object corresponding to the id passed in</returns>
         /// Example Request: http://statsapi.web.nhl.com/api/v1/game/2019020001/feed/live
         public async Task<DbGame> GetGame(int gameId)
-        {
+        { 
             string url = "http://statsapi.web.nhl.com/api/v1/game/";
             string query = GetGameQuery(gameId);
             var gameResponse = await _requestMaker.MakeRequest(url, query);

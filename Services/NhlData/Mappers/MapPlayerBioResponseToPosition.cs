@@ -1,9 +1,6 @@
-﻿using Entities.Types;
-using Entities.Types.Mappers;
-
-namespace Services.NhlData.Mappers
+﻿namespace Services.NhlData.Mappers
 {
-	public static class MapPlayerBioResponseToPositionStr
+    public static class MapPlayerBioResponseToPositionStr
 	{
 		/// <summary>
 		/// Gets the position of a player from the nhl response
@@ -13,7 +10,7 @@ namespace Services.NhlData.Mappers
 		public static string Map(dynamic playerBioResponse)
 		{
 			return playerBioResponse.people[0].primaryPosition.abbreviation;
-		}
+        }
 	}
 }
 

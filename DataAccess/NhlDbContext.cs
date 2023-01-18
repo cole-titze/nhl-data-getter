@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Entities.DbModels;
-using Entities.Models;
+﻿using Entities.DbModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess

@@ -1,5 +1,4 @@
-﻿using System;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 using Entities.Models;
 
 namespace DataAccess.GameRepository

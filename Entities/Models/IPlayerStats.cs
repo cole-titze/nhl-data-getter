@@ -1,6 +1,4 @@
-﻿using Entities.Types;
-
-namespace Entities.Models
+﻿namespace Entities.Models
 {
     public interface IPlayerStats
     {

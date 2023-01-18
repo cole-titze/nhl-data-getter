@@ -1,5 +1,4 @@
-﻿using System;
-using Entities.DbModels;
+﻿using Entities.DbModels;
 using Entities.Models;
 using Entities.Types.Mappers;
 using Microsoft.Extensions.Logging;
@@ -8,7 +7,7 @@ using Services.RequestMaker;
 
 namespace Services.NhlData
 {
-	public class NhlPlayerGetter : INhlPlayerGetter
+    public class NhlPlayerGetter : INhlPlayerGetter
 	{
         private readonly IRequestMaker _requestMaker;
         private readonly ILogger<NhlPlayerGetter> _logger;
@@ -31,7 +30,7 @@ namespace Services.NhlData
         {
             Roster players = await GetPastGameRoster(game);
 
-            if (players.homeTeam.Count() == 0 && players.awayTeam.Count() == 0)
+            if (players.homeTeam.Count() == 0 || players.awayTeam.Count() == 0)
             {
                 players = await GetCurrentTeamRosters(game);
             }
@@ -62,23 +61,24 @@ namespace Services.NhlData
         private async Task<List<DbGamePlayer>> GetTeamRoster(DbGame game, int teamId)
         {
             var players = new List<DbGamePlayer>();
-            string url = "";
-            string query = "";
+            string url;
+            string query;
 
-            if (_cachedTeamRoster.ContainsKey(game.homeTeamId))
+            if (_cachedTeamRoster.ContainsKey(teamId))
             {
-                players.AddRange(_cachedTeamRoster[game.homeTeamId]);
+                players.AddRange(_cachedTeamRoster[teamId]);
             }
             else
             {
                 url = "https://statsapi.web.nhl.com/api/v1/teams/" + teamId.ToString() + "/roster";
-                var homeResponse = await _requestMaker.MakeRequest(url, query);
-                if (homeResponse == null)
+                query = "";
+                var teamResponse = await _requestMaker.MakeRequest(url, query);
+                if (teamResponse == null)
                 {
                     _logger.LogWarning($"Failed to get roster from request: Season: {game.seasonStartYear} Game: {game.id}");
                     return new List<DbGamePlayer>();
                 }
-                var teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(homeResponse, game, teamId);
+                List<DbGamePlayer> teamRoster = MapRosterResponseToGameRoster.MapTeamRoster(teamResponse, game, teamId);
                 players.AddRange(teamRoster);
                 _cachedTeamRoster.Add(teamId, teamRoster);
             }

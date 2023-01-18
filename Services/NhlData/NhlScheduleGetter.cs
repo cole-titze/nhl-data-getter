@@ -1,11 +1,10 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Services.NhlData.Mappers;
 using Services.RequestMaker;
 
 namespace Services.NhlData
 {
-	public class NhlScheduleGetter : INhlScheduleGetter
+    public class NhlScheduleGetter : INhlScheduleGetter
 	{
         private readonly IRequestMaker _requestMaker;
         private readonly ILogger<NhlGameGetter> _logger;

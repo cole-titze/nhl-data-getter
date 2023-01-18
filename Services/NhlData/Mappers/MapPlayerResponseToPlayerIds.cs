@@ -1,8 +1,6 @@
-﻿using Entities.DbModels;
-
-namespace Services.NhlData.Mappers
+﻿namespace Services.NhlData.Mappers
 {
-	public static class MapPlayerResponseToPlayerIds
+    public static class MapPlayerResponseToPlayerIds
 	{
 		/// <summary>
 		/// Maps the player response to a list of player ids
@@ -12,15 +10,14 @@ namespace Services.NhlData.Mappers
 		public static List<int> Map(dynamic playerResponse)
 		{
 			var playerIds = new List<int>();
-			int playerId;
-			foreach(var player in playerResponse.roster)
-			{
-				playerId = Convert.ToInt32(player.person.id);
-				playerIds.Add(playerId);
-			}
+
+            foreach (var player in playerResponse.roster)
+            {
+                var playerId = Convert.ToInt32(player.person.id);
+                playerIds.Add(playerId);
+            }
 
 			return playerIds;
 		}
 	}
 }
-

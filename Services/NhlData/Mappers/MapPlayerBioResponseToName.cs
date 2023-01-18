@@ -1,7 +1,6 @@
-﻿using System;
-namespace Services.NhlData.Mappers
+﻿namespace Services.NhlData.Mappers
 {
-	public static class MapPlayerBioResponseToName
+    public static class MapPlayerBioResponseToName
 	{
 		/// <summary>
 		/// Gets the name of a player from the player bio response
@@ -10,8 +9,7 @@ namespace Services.NhlData.Mappers
 		/// <returns>The players name</returns>
 		public static string Map(dynamic playerBioResponse)
 		{
-			string name = (string)playerBioResponse.people[0].fullName;
-			return name;
+            return (string)playerBioResponse.people[0].fullName;
         }
 	}
 }

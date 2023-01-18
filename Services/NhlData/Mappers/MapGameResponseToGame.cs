@@ -43,9 +43,6 @@ namespace Services.NhlData.Mappers
                 hasBeenPlayed = (message.gameData.status.detailedState == "Final") ? true : false,
             };
 
-            if (game == null)
-                return new DbGame();
-
             return game;
         }
         /// <summary>

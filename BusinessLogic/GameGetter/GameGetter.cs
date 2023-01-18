@@ -97,7 +97,7 @@ namespace BusinessLogic.GameGetter
             // game ids start at 1
             for (int count = 1; count <= gameCount; count++)
             {
-                var gameId = NhlDataGetter.GetGameIdFrom(seasonStartYear, count);
+                var gameId = NhlDataGetter.GetGameId(seasonStartYear, count);
                 game = _gameRepo.GetGame(gameId);
                 if (game.IsValid() && game.hasBeenPlayed)
                     continue;
