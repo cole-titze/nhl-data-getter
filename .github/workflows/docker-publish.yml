@@ -44,6 +44,8 @@ jobs:
       run: cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
     - name: Copy business logic coverage file
       run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
+    - name: get path
+      run: pwd
 
     - uses: actions/checkout@master
     - uses: codecov/codecov-action@v3
