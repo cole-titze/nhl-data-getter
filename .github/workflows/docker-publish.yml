@@ -36,10 +36,19 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage"
+
+    - name: Copy services coverage file
+      run: cp ./ServicesTests/TestResults/*/coverage.cobertura.xml ./servicesCoverage.xml
+    - name: Copy entities coverage file
+      run: cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
+    - name: Copy business logic coverage file
+      run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
 
     - uses: actions/checkout@master
     - uses: codecov/codecov-action@v3
+      with:
+        files: ./servicesCoverage.xml,./entitiesCoverage.xml,./businesslogicCoverage.xml
 
   build_and_publish:
     needs: test
