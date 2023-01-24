@@ -55,7 +55,7 @@ jobs:
     - uses: codecov/codecov-action@v3
       with:
         directory: /home/runner/work/nhl-data-getter/nhl-data-getter
-        files: ./servicesCoverage.xml,./entitiesCoverage.xml,./businesslogicCoverage.xml
+        files: /home/runner/work/nhl-data-getter/nhl-data-getter/servicesCoverage.xml,/home/runner/work/nhl-data-getter/nhl-data-getter/entitiesCoverage.xml,/home/runner/work/nhl-data-getter/nhl-data-getter/businesslogicCoverage.xml
         name: codecov-umbrella
 
   build_and_publish:
