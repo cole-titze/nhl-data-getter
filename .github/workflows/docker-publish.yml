@@ -46,6 +46,10 @@ jobs:
       run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
     - name: get path
       run: pwd
+    - name: list files
+      run: ls
+    - name: get path
+      run: cat /home/runner/work/nhl-data-getter/nhl-data-getter/servicesCoverage.xml
 
     - uses: actions/checkout@master
     - uses: codecov/codecov-action@v3
