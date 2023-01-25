@@ -7,7 +7,7 @@ name: Docker
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test ]
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ test ]
@@ -44,12 +44,18 @@ jobs:
       run: cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
     - name: Copy business logic coverage file
       run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
-    - name: get path
-      run: pwd
-    - name: list files
-      run: ls
-    - name: get path
-      run: cat /home/runner/work/nhl-data-getter/nhl-data-getter/servicesCoverage.xml
+    - name: Get lines covered
+      run: |
+        linesCovered=0
+        linesValid=0
+        linesCovered=$(($linesCovered+$(cat servicesCoverage.xml | grep -oP lines-covered="\K[^"]]+)))
+        linesCovered=$(($linesCovered+$(cat entitiesCoverage.xml | grep -oP lines-covered="\K[^"]]+)))
+        linesCovered=$(($linesCovered+$(cat businesslogicCoverage.xml | grep -oP lines-covered="\K[^"]]+)))
+        linesValid=$(($linesValid+$(cat servicesCoverage.xml | grep -oP lines-valid="\K[^"]]+)))
+        linesValid=$(($linesValid+$(cat entitiesCoverage.xml | grep -oP lines-valid="\K[^"]]+)))
+        linesValid=$(($linesValid+$(cat businesslogicCoverage.xml | grep -oP lines-valid="\K[^"]]+)))
+        result=$((100 * $linesCovered / $linesValid))
+        echo $result
 
     - uses: actions/checkout@master
     - uses: codecov/codecov-action@v3
