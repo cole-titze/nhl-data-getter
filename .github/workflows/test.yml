@@ -99,4 +99,4 @@ jobs:
           token: ${{ secrets.REPO_NHL_DATA_GETTER_PAT }}
           repository: ${{ github.repository }}
           event-type: trigger-docker-workflow
-          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
