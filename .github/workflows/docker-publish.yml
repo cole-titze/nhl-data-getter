@@ -1,10 +1,5 @@
 name: Docker
 
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 on:
   push:
     branches: [ main ]
@@ -60,7 +55,7 @@ jobs:
         else
           COLOR=orange
         fi
-        curl "https://img.shields.io/badge/Services%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg?
+        curl "https://img.shields.io/badge/Services%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
     - name: Get entities badge
       run: |
         total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
@@ -76,7 +71,7 @@ jobs:
         else
           COLOR=orange
         fi
-        curl "https://img.shields.io/badge/Entities%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg?
+        curl "https://img.shields.io/badge/Entities%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
     - name: Get business logic badge
       run: |
         total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
@@ -92,7 +87,16 @@ jobs:
         else
           COLOR=orange
         fi
-        curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg?
+        curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
+
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Run Azure CLI command
+      run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*"
 
     - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
       name: Azure Blob Upload with Destination folder defined
