@@ -5,10 +5,6 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/test.yml?label=Test)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/docker-publish.yml?label=Docker%20Publish)
 \
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/test.yml)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/build.yml)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/docker-publish.yml)
-\
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterBusinessLogicBadge.svg)
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterServicesBadge.svg)
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterEntitiesBadge.svg)
