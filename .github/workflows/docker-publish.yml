@@ -101,7 +101,7 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Run Azure CLI command
-      run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*"
+      run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*" --account-name "nhlblobstorage"
 
     - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
       name: Azure Blob Upload with Destination folder defined
