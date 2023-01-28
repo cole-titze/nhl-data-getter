@@ -7,10 +7,15 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+      id-token: write
+      contents: read
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   DOTNET_VERSION: '6.0.401' # The .NET SDK version to use for testing
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
 jobs:
   test:
