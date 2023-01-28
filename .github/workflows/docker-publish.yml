@@ -38,61 +38,53 @@ jobs:
     - name: Test
       run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage"
 
-    - name: Copy services coverage file
-      run: cp ./ServicesTests/TestResults/*/coverage.cobertura.xml ./servicesCoverage.xml
-    - name: Copy entities coverage file
-      run: cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
-    - name: Copy business logic coverage file
-      run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
-    - name: Get services badge
+    - name: Copy coverage files
+      run: |
+        cp ./ServicesTests/TestResults/*/coverage.cobertura.xml ./servicesCoverage.xml
+        cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
+        cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
+        cp ./EntryTests/TestResults/*/coverage.cobertura.xml ./entryCoverage.xml
+        cp ./DataAccessTests/TestResults/*/coverage.cobertura.xml ./dataaccessCoverage.xml
+
+    - name: Badge setup
       run: |
         mkdir badges
+        function getColor { total=$1; if (( $(echo "$total <= 25" | bc -l) )) ; then   COLOR=red; elif (( $(echo "$total >= 100" | bc -l) )); then   COLOR=brightgreen; elif (( $(echo "$total > 85" | bc -l) )); then   COLOR=green; elif (( $(echo "$total > 70" | bc -l) )); then   COLOR=yellow; else   COLOR=orange; fi; echo $COLOR; }
+    
+    - name: Get services badge
+      run: |
         total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
-        if (( $(echo "$total <= 25" | bc -l) )) ; then
-          COLOR=red
-        elif (( $(echo "$total >= 100" | bc -l) )); then
-          COLOR=brightgreen
-        elif (( $(echo "$total > 85" | bc -l) )); then
-          COLOR=green
-        elif (( $(echo "$total > 70" | bc -l) )); then
-          COLOR=yellow
-        else
-          COLOR=orange
-        fi
+        COLOR=getColor $total
         curl "https://img.shields.io/badge/Services%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
+    
     - name: Get entities badge
       run: |
         total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
-        if (( $(echo "$total <= 25" | bc -l) )) ; then
-          COLOR=red
-        elif (( $(echo "$total >= 100" | bc -l) )); then
-          COLOR=brightgreen
-        elif (( $(echo "$total > 85" | bc -l) )); then
-          COLOR=green
-        elif (( $(echo "$total > 70" | bc -l) )); then
-          COLOR=yellow
-        else
-          COLOR=orange
-        fi
+        COLOR=getColor $total
         curl "https://img.shields.io/badge/Entities%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
+    
     - name: Get business logic badge
       run: |
         total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
-        if (( $(echo "$total <= 25" | bc -l) )) ; then
-          COLOR=red
-        elif (( $(echo "$total >= 100" | bc -l) )); then
-          COLOR=brightgreen
-        elif (( $(echo "$total > 85" | bc -l) )); then
-          COLOR=green
-        elif (( $(echo "$total > 70" | bc -l) )); then
-          COLOR=yellow
-        else
-          COLOR=orange
-        fi
+        COLOR=getColor $total
         curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
+    
+    - name: Get entry badge
+      run: |
+        total=$(cat entryCoverage.xml | grep -oP 'package name="Entry" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
+        COLOR=getColor $total
+        curl "https://img.shields.io/badge/Entry%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntryBadge.svg
+
+    - name: Get data access badge
+      run: |
+        total=$(cat dataaccessCoverage.xml | grep -oP 'package name="DataAccess" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
+        COLOR=getColor $total
+        curl "https://img.shields.io/badge/Data%20Access%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterDataAccessBadge.svg
 
     - name: 'Az CLI login'
       uses: azure/login@v1
@@ -100,7 +92,8 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    - name: Run Azure CLI command
+
+    - name: Upload badge svgs
       run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*" --account-name "nhlblobstorage" --destination "repobadges"
 
 
