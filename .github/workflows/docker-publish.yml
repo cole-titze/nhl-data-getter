@@ -7,10 +7,10 @@ name: Docker
 
 on:
   push:
-    branches: [ test ]
+    branches: [ main ]
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ test ]
+    branches: [ main ]
 
 env:
   REGISTRY: ghcr.io
