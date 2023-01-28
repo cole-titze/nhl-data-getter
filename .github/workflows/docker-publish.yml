@@ -49,10 +49,14 @@ jobs:
         mkdir badges
         total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
-        if (( $(echo "$total <= 50" | bc -l) )) ; then
+        if (( $(echo "$total <= 25" | bc -l) )) ; then
           COLOR=red
+        elif (( $(echo "$total >= 100" | bc -l) )); then
+          COLOR=brightgreen
         elif (( $(echo "$total > 85" | bc -l) )); then
           COLOR=green
+        elif (( $(echo "$total > 70" | bc -l) )); then
+          COLOR=yellow
         else
           COLOR=orange
         fi
@@ -61,10 +65,14 @@ jobs:
       run: |
         total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
-        if (( $(echo "$total <= 50" | bc -l) )) ; then
+        if (( $(echo "$total <= 25" | bc -l) )) ; then
           COLOR=red
+        elif (( $(echo "$total >= 100" | bc -l) )); then
+          COLOR=brightgreen
         elif (( $(echo "$total > 85" | bc -l) )); then
           COLOR=green
+        elif (( $(echo "$total > 70" | bc -l) )); then
+          COLOR=yellow
         else
           COLOR=orange
         fi
@@ -73,10 +81,14 @@ jobs:
       run: |
         total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
-        if (( $(echo "$total <= 50" | bc -l) )) ; then
+        if (( $(echo "$total <= 25" | bc -l) )) ; then
           COLOR=red
+        elif (( $(echo "$total >= 100" | bc -l) )); then
+          COLOR=brightgreen
         elif (( $(echo "$total > 85" | bc -l) )); then
           COLOR=green
+        elif (( $(echo "$total > 70" | bc -l) )); then
+          COLOR=yellow
         else
           COLOR=orange
         fi
