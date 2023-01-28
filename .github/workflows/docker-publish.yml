@@ -16,7 +16,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   DOTNET_VERSION: '6.0.401' # The .NET SDK version to use for testing
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  GET_COLOR: 'function getColor { total=$1; if (( $(echo "$total <= 25" | bc -l) )) ; then   COLOR=red; elif (( $(echo "$total >= 100" | bc -l) )); then   COLOR=brightgreen; elif (( $(echo "$total > 85" | bc -l) )); then   COLOR=green; elif (( $(echo "$total > 70" | bc -l) )); then   COLOR=yellow; else   COLOR=orange; fi; echo $COLOR; }''
+  GET_COLOR: 'function getColor { total=$1; if (( $(echo "$total <= 25" | bc -l) )) ; then   COLOR=red; elif (( $(echo "$total >= 100" | bc -l) )); then   COLOR=brightgreen; elif (( $(echo "$total > 85" | bc -l) )); then   COLOR=green; elif (( $(echo "$total > 70" | bc -l) )); then   COLOR=yellow; else   COLOR=orange; fi; echo $COLOR; }'
 
 
 jobs:
