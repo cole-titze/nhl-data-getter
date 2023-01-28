@@ -48,6 +48,7 @@ jobs:
       run: |
         mkdir badges
         total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
         if (( $(echo "$total <= 50" | bc -l) )) ; then
           COLOR=red
         elif (( $(echo "$total > 85" | bc -l) )); then
@@ -55,11 +56,11 @@ jobs:
         else
           COLOR=orange
         fi
-        total=$(echo "scale=0; $total*100/1" | bc)
         curl "https://img.shields.io/badge/Services%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
     - name: Get entities badge
       run: |
         total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
         if (( $(echo "$total <= 50" | bc -l) )) ; then
           COLOR=red
         elif (( $(echo "$total > 85" | bc -l) )); then
@@ -67,11 +68,11 @@ jobs:
         else
           COLOR=orange
         fi
-        total=$(echo "scale=0; $total*100/1" | bc)
         curl "https://img.shields.io/badge/Entities%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
     - name: Get business logic badge
       run: |
         total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
         if (( $(echo "$total <= 50" | bc -l) )) ; then
           COLOR=red
         elif (( $(echo "$total > 85" | bc -l) )); then
@@ -79,7 +80,6 @@ jobs:
         else
           COLOR=orange
         fi
-        total=$(echo "scale=0; $total*100/1" | bc)
         curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
 
     - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
