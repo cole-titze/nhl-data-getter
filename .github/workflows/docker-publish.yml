@@ -1,107 +1,14 @@
-name: Docker
+name: Docker Publish
 
 on:
-  push:
-    branches: [ main ]
-    tags: [ 'v*.*.*' ]
-  pull_request:
-    branches: [ main ]
-
-permissions:
-      id-token: write
-      contents: read
+  repository_dispatch:
+    types: [trigger-docker-workflow]
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   DOTNET_VERSION: '6.0.401' # The .NET SDK version to use for testing
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-  GET_COLOR: 'function getColor { total=$1; if (( $(echo "$total <= 25" | bc -l) )) ; then   COLOR=red; elif (( $(echo "$total >= 100" | bc -l) )); then   COLOR=brightgreen; elif (( $(echo "$total > 85" | bc -l) )); then   COLOR=green; elif (( $(echo "$total > 70" | bc -l) )); then   COLOR=yellow; else   COLOR=orange; fi; echo $COLOR; }'
-
-
-jobs:
-  test:
-    name: build-and-test-linux
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Install dependencies
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage"
-
-    - name: Copy coverage files
-      run: |
-        cp ./ServicesTests/TestResults/*/coverage.cobertura.xml ./servicesCoverage.xml
-        cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
-        cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
-        cp ./EntryTests/TestResults/*/coverage.cobertura.xml ./entryCoverage.xml
-        cp ./DataAccessTests/TestResults/*/coverage.cobertura.xml ./dataaccessCoverage.xml
-
-    - name: Badge setup
-      run: |
-        mkdir badges
-    
-    - name: Get services badge
-      run: |
-        ${{ env.GET_COLOR }}
-        total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
-        total=$(echo "scale=0; $total*100/1" | bc)
-        getColor $total > COLOR
-        curl "https://img.shields.io/badge/Services%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
-    
-    - name: Get entities badge
-      run: |
-        ${{ env.GET_COLOR }}
-        total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
-        total=$(echo "scale=0; $total*100/1" | bc)
-        getColor $total > COLOR
-        curl "https://img.shields.io/badge/Entities%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
-    
-    - name: Get business logic badge
-      run: |
-        ${{ env.GET_COLOR }}
-        total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
-        total=$(echo "scale=0; $total*100/1" | bc)
-        getColor $total > COLOR
-        curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
-    
-    - name: Get entry badge
-      run: |
-        ${{ env.GET_COLOR }}
-        total=$(cat entryCoverage.xml | grep -oP 'package name="Entry" line-rate="\K[^"]+')
-        total=$(echo "scale=0; $total*100/1" | bc)
-        getColor $total > COLOR
-        curl "https://img.shields.io/badge/Entry%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntryBadge.svg
-
-    - name: Get data access badge
-      run: |
-        ${{ env.GET_COLOR }}
-        total=$(cat dataaccessCoverage.xml | grep -oP 'package name="DataAccess" line-rate="\K[^"]+')
-        total=$(echo "scale=0; $total*100/1" | bc)
-        getColor $total > COLOR
-        curl "https://img.shields.io/badge/Data%20Access%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterDataAccessBadge.svg
-
-    - name: 'Az CLI login'
-      uses: azure/login@v1
-      with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-    - name: Upload badge svgs
-      run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*" --account-name "nhlblobstorage" --destination "repobadges"
-
 
   build_and_publish:
     needs: test
@@ -113,6 +20,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.sha }}
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
