@@ -7,7 +7,7 @@ name: Docker
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test ]
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ test ]
@@ -44,18 +44,51 @@ jobs:
       run: cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
     - name: Copy business logic coverage file
       run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
-    - name: get path
-      run: pwd
-    - name: list files
-      run: ls
-    - name: get path
-      run: cat /home/runner/work/nhl-data-getter/nhl-data-getter/servicesCoverage.xml
+    - name: Get services badge
+      run: |
+        mkdir badges
+        total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
+        if (( $(echo "$total <= 50" | bc -l) )) ; then
+          COLOR=red
+        elif (( $(echo "$total > 85" | bc -l) )); then
+          COLOR=green
+        else
+          COLOR=orange
+        fi
+        curl "https://img.shields.io/badge/Services%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
+    - name: Get entities badge
+      run: |
+        total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
+        if (( $(echo "$total <= 50" | bc -l) )) ; then
+          COLOR=red
+        elif (( $(echo "$total > 85" | bc -l) )); then
+          COLOR=green
+        else
+          COLOR=orange
+        fi
+        curl "https://img.shields.io/badge/Entities%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
+    - name: Get business logic badge
+      run: |
+        total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
+        total=$(echo "scale=0; $total*100/1" | bc)
+        if (( $(echo "$total <= 50" | bc -l) )) ; then
+          COLOR=red
+        elif (( $(echo "$total > 85" | bc -l) )); then
+          COLOR=green
+        else
+          COLOR=orange
+        fi
+        curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
 
-    - uses: actions/checkout@master
-    - uses: codecov/codecov-action@v3
+    - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
+      name: Azure Blob Upload with Destination folder defined
       with:
-        files: /home/runner/work/nhl-data-getter/nhl-data-getter/servicesCoverage.xml,/home/runner/work/nhl-data-getter/nhl-data-getter/entitiesCoverage.xml,/home/runner/work/nhl-data-getter/nhl-data-getter/businesslogicCoverage.xml
-        name: codecov-umbrella
+        connection_string: ${{ secrets.AZURE_BLOB_CONNECTION }}
+        container_name: repobadges
+        source_folder: ./badges
+        delete_if_exists: true
 
   build_and_publish:
     needs: test
