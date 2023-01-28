@@ -16,6 +16,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   DOTNET_VERSION: '6.0.401' # The .NET SDK version to use for testing
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  GET_COLOR: 'function getColor { total=$1; if (( $(echo "$total <= 25" | bc -l) )) ; then   COLOR=red; elif (( $(echo "$total >= 100" | bc -l) )); then   COLOR=brightgreen; elif (( $(echo "$total > 85" | bc -l) )); then   COLOR=green; elif (( $(echo "$total > 70" | bc -l) )); then   COLOR=yellow; else   COLOR=orange; fi; echo $COLOR; }''
+
 
 jobs:
   test:
@@ -49,10 +51,10 @@ jobs:
     - name: Badge setup
       run: |
         mkdir badges
-        function getColor { total=$1; if (( $(echo "$total <= 25" | bc -l) )) ; then   COLOR=red; elif (( $(echo "$total >= 100" | bc -l) )); then   COLOR=brightgreen; elif (( $(echo "$total > 85" | bc -l) )); then   COLOR=green; elif (( $(echo "$total > 70" | bc -l) )); then   COLOR=yellow; else   COLOR=orange; fi; echo $COLOR; }
     
     - name: Get services badge
       run: |
+        ${{ env.GET_COLOR }}
         total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
         getColor $total > COLOR
@@ -60,6 +62,7 @@ jobs:
     
     - name: Get entities badge
       run: |
+        ${{ env.GET_COLOR }}
         total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
         getColor $total > COLOR
@@ -67,6 +70,7 @@ jobs:
     
     - name: Get business logic badge
       run: |
+        ${{ env.GET_COLOR }}
         total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
         getColor $total > COLOR
@@ -74,6 +78,7 @@ jobs:
     
     - name: Get entry badge
       run: |
+        ${{ env.GET_COLOR }}
         total=$(cat entryCoverage.xml | grep -oP 'package name="Entry" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
         getColor $total > COLOR
@@ -81,6 +86,7 @@ jobs:
 
     - name: Get data access badge
       run: |
+        ${{ env.GET_COLOR }}
         total=$(cat dataaccessCoverage.xml | grep -oP 'package name="DataAccess" line-rate="\K[^"]+')
         total=$(echo "scale=0; $total*100/1" | bc)
         getColor $total > COLOR
