@@ -94,22 +94,9 @@ jobs:
         fi
         curl "https://img.shields.io/badge/Business%20Logic%20Test%20Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
 
-    - name: 'Az CLI login'
-      uses: azure/login@v1
-      with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
     - name: Run Azure CLI command
-      run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*" --account-name "nhlblobstorage" --destination "repobadges"
+      run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --if-none-match "*" --account-name "nhlblobstorage" --destination "repobadges" --connection-string {{ secrets.AZURE_BLOB_CONNECTION }}
 
-    - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
-      name: Azure Blob Upload with Destination folder defined
-      with:
-        connection_string: ${{ secrets.AZURE_BLOB_CONNECTION }}
-        container_name: repobadges
-        source_folder: ./badges
-        delete_if_exists: true
 
   build_and_publish:
     needs: test
