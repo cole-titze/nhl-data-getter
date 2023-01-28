@@ -1,7 +1,7 @@
-namespace DataAccessTests
+﻿namespace EntryTests.UnitTests
 {
     [TestClass]
-    public class UnitTest1
+    public class DataGetterTests
     {
         [TestMethod]
         public void TestMethod1()

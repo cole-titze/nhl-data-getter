@@ -1,7 +1,7 @@
-namespace EntryTests
+﻿namespace DataAccessTests.UnitTests.GameRepositoryTests
 {
     [TestClass]
-    public class UnitTest1
+    public class GameRepositoryTests
     {
         [TestMethod]
         public void TestMethod1()

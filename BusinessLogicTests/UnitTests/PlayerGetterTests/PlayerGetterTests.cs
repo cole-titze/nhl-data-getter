@@ -1,7 +1,6 @@
 ﻿using BusinessLogic.PlayerGetter;
 using DataAccess.PlayerRepository;
 using Entities.DbModels;
-using Entities.Models;
 using Entities.Types;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
