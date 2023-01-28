@@ -44,18 +44,10 @@ jobs:
       run: cp ./EntitiesTests/TestResults/*/coverage.cobertura.xml ./entitiesCoverage.xml
     - name: Copy business logic coverage file
       run: cp ./BusinessLogicTests/TestResults/*/coverage.cobertura.xml ./businesslogicCoverage.xml
-    - name: Get lines covered
+    - name: Get services badge
       run: |
-        linesCovered=0
-        linesValid=0
-        linesCovered=$(($linesCovered+$(cat servicesCoverage.xml | grep -oP 'lines-covered="\K[^"]+')))
-        linesCovered=$(($linesCovered+$(cat entitiesCoverage.xml | grep -oP 'lines-covered="\K[^"]+')))
-        linesCovered=$(($linesCovered+$(cat businesslogicCoverage.xml | grep -oP 'lines-covered="\K[^"]+')))
-        linesValid=$(($linesValid+$(cat servicesCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
-        linesValid=$(($linesValid+$(cat entitiesCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
-        linesValid=$(($linesValid+$(cat businesslogicCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
-        total=$((100 * $linesCovered / $linesValid))
-        echo $total
+        mkdir badges
+        total=$(cat servicesCoverage.xml | grep -oP 'package name="Services" line-rate="\K[^"]+')
         if (( $(echo "$total <= 50" | bc -l) )) ; then
           COLOR=red
         elif (( $(echo "$total > 85" | bc -l) )); then
@@ -63,8 +55,28 @@ jobs:
         else
           COLOR=orange
         fi
-        mkdir badges
-        curl "https://img.shields.io/badge/coavrege-$total%25-$COLOR" > ./badges/badge.svg
+        curl "https://img.shields.io/badge/Services-Test-Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
+    - name: Get entities badge
+      run: |
+        total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
+        if (( $(echo "$total <= 50" | bc -l) )) ; then
+          COLOR=red
+        elif (( $(echo "$total > 85" | bc -l) )); then
+          COLOR=green
+        else
+          COLOR=orange
+        fi
+        curl "https://img.shields.io/badge/Entities-Test-Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
+    - name: Get entities badge
+      run: |
+        total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
+        if (( $(echo "$total <= 50" | bc -l) )) ; then
+          COLOR=red
+        elif (( $(echo "$total > 85" | bc -l) )); then
+          COLOR=green
+        else
+          COLOR=orange
+        fi
 
     - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
       name: Azure Blob Upload with Destination folder defined
