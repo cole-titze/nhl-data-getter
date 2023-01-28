@@ -2,7 +2,7 @@
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cole-titze/nhl-data-getter?label=Release)
 \
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/build.yml?label=Build)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/test.yml?label=Test)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/test.yml?label=Tests)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/docker-publish.yml?label=Docker%20Publish)
 \
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterBusinessLogicBadge.svg)
