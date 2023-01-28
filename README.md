@@ -1,6 +1,10 @@
 ![GitHub](https://img.shields.io/github/license/cole-titze/nhl-data-getter?color=brightgreen)
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cole-titze/nhl-data-getter?label=Release)
 \
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/test.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/build.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/cole-titze/nhl-data-getter/docker-publish.yml)
+\
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterBusinessLogicBadge.svg)
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterServicesBadge.svg)
 ![cod cov](https://nhlblobstorage.blob.core.windows.net/repobadges/nhlDataGetterEntitiesBadge.svg)
