@@ -15,7 +15,7 @@ env:
   DOTNET_VERSION: '6.0.401' # The .NET SDK version to use for testing
 
 jobs:
-  test:
+  build:
     name: build-and-test-linux
     runs-on: ubuntu-latest
 
@@ -39,4 +39,4 @@ jobs:
         token: ${{ secrets.REPO_NHL_DATA_GETTER_PAT }}
         repository: ${{ github.repository }}
         event-type: trigger-test-workflow
-        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}
+        client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'
