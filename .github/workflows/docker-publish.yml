@@ -48,12 +48,12 @@ jobs:
       run: |
         linesCovered=0
         linesValid=0
-        linesCovered=$(($linesCovered+$(cat servicesCoverage.xml | grep -oP lines-covered="\K[^"]]+)))
-        linesCovered=$(($linesCovered+$(cat entitiesCoverage.xml | grep -oP lines-covered="\K[^"]]+)))
-        linesCovered=$(($linesCovered+$(cat businesslogicCoverage.xml | grep -oP lines-covered="\K[^"]]+)))
-        linesValid=$(($linesValid+$(cat servicesCoverage.xml | grep -oP lines-valid="\K[^"]]+)))
-        linesValid=$(($linesValid+$(cat entitiesCoverage.xml | grep -oP lines-valid="\K[^"]]+)))
-        linesValid=$(($linesValid+$(cat businesslogicCoverage.xml | grep -oP lines-valid="\K[^"]]+)))
+        linesCovered=$(($linesCovered+$(cat servicesCoverage.xml | grep -oP 'lines-covered="\K[^"]+')))
+        linesCovered=$(($linesCovered+$(cat entitiesCoverage.xml | grep -oP 'lines-covered="\K[^"]+')))
+        linesCovered=$(($linesCovered+$(cat businesslogicCoverage.xml | grep -oP 'lines-covered="\K[^"]+')))
+        linesValid=$(($linesValid+$(cat servicesCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
+        linesValid=$(($linesValid+$(cat entitiesCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
+        linesValid=$(($linesValid+$(cat businesslogicCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
         result=$((100 * $linesCovered / $linesValid))
         echo $result
 
