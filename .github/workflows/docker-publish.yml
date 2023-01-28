@@ -54,14 +54,25 @@ jobs:
         linesValid=$(($linesValid+$(cat servicesCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
         linesValid=$(($linesValid+$(cat entitiesCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
         linesValid=$(($linesValid+$(cat businesslogicCoverage.xml | grep -oP 'lines-valid="\K[^"]+')))
-        result=$((100 * $linesCovered / $linesValid))
-        echo $result
+        total=$((100 * $linesCovered / $linesValid))
+        echo $total
+        if (( $(echo "$total <= 50" | bc -l) )) ; then
+          COLOR=red
+        elif (( $(echo "$total > 85" | bc -l) )); then
+          COLOR=green
+        else
+          COLOR=orange
+        fi
+        mkdir badges
+        curl "https://img.shields.io/badge/coavrege-$total%25-$COLOR" > ./badges/badge.svg
 
-    - uses: actions/checkout@master
-    - uses: codecov/codecov-action@v3
+    - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
+      name: Azure Blob Upload with Destination folder defined
       with:
-        files: /home/runner/work/nhl-data-getter/nhl-data-getter/servicesCoverage.xml,/home/runner/work/nhl-data-getter/nhl-data-getter/entitiesCoverage.xml,/home/runner/work/nhl-data-getter/nhl-data-getter/businesslogicCoverage.xml
-        name: codecov-umbrella
+        connection_string: ${{ secrets.AZURE_BLOB_CONNECTION }}
+        container_name: repobadges
+        source_folder: ./badges
+        delete_if_exists: true
 
   build_and_publish:
     needs: test
