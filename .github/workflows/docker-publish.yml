@@ -55,7 +55,7 @@ jobs:
         else
           COLOR=orange
         fi
-        curl "https://img.shields.io/badge/Services-Test-Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
+        curl "https://img.shields.io/badge/Services Test Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterServicesBadge.svg
     - name: Get entities badge
       run: |
         total=$(cat entitiesCoverage.xml | grep -oP 'package name="Entities" line-rate="\K[^"]+')
@@ -66,8 +66,8 @@ jobs:
         else
           COLOR=orange
         fi
-        curl "https://img.shields.io/badge/Entities-Test-Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
-    - name: Get entities badge
+        curl "https://img.shields.io/badge/Entities Test Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterEntitiesBadge.svg
+    - name: Get business logic badge
       run: |
         total=$(cat businesslogicCoverage.xml | grep -oP 'package name="BusinessLogic" line-rate="\K[^"]+')
         if (( $(echo "$total <= 50" | bc -l) )) ; then
@@ -77,7 +77,7 @@ jobs:
         else
           COLOR=orange
         fi
-        curl "https://img.shields.io/badge/Business-Logic-Test-Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
+        curl "https://img.shields.io/badge/Business Logic Test Coverage-$total%25-$COLOR" > ./badges/nhlDataGetterBusinessLogicBadge.svg
 
     - uses: LanceMcCarthy/Action-AzureBlobUpload@v2
       name: Azure Blob Upload with Destination folder defined
