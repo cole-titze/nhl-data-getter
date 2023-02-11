@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicesTests", "ServicesTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntitiesTests", "EntitiesTests\EntitiesTests.csproj", "{EDCE2C6C-6ABE-43D7-A54E-BF83FB0B897C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessTests", "DataAccessTests\DataAccessTests.csproj", "{9E77F4B8-F3F6-444E-80EA-CC88F8554E71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccessTests", "DataAccessTests\DataAccessTests.csproj", "{9E77F4B8-F3F6-444E-80EA-CC88F8554E71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntryTests", "EntryTests\EntryTests.csproj", "{5CF10F8D-7CC2-465A-AFA6-80C8B6D94793}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntryTests", "EntryTests\EntryTests.csproj", "{5CF10F8D-7CC2-465A-AFA6-80C8B6D94793}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary", "TestLibrary\TestLibrary.csproj", "{9323DDE3-4CC6-41E5-BF06-F99F5C3B1C23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{5CF10F8D-7CC2-465A-AFA6-80C8B6D94793}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CF10F8D-7CC2-465A-AFA6-80C8B6D94793}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CF10F8D-7CC2-465A-AFA6-80C8B6D94793}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9323DDE3-4CC6-41E5-BF06-F99F5C3B1C23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9323DDE3-4CC6-41E5-BF06-F99F5C3B1C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9323DDE3-4CC6-41E5-BF06-F99F5C3B1C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9323DDE3-4CC6-41E5-BF06-F99F5C3B1C23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
