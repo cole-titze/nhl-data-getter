@@ -62,8 +62,6 @@ namespace BusinessLogic.GameGetter
                 rosters.Add(game.id, new Roster());
 
                 players = await _nhlDataGetter.PlayerDataGetter.GetGameRoster(game);
-                players.homeTeam = players.homeTeam.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList(); //Remove duplicates if player played multiple
-                players.awayTeam = players.homeTeam.GroupBy(x => new { x.gameId, x.playerId }).Select(x => x.First()).ToList();
 
                 rosters[game.id] = players;
             }
