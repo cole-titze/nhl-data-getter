@@ -96,7 +96,7 @@ jobs:
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Upload badge svgs
-        run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --content-cache-control "no-cache" --account-name "nhlblobstorage" --destination "repobadges"
+        run: az storage blob upload-batch -s ./badges -d badges --pattern "*.svg" --overwrite true --content-cache-control "no-cache" --account-name "nhlblobstorage" --destination "repobadges"
 
       - name: Trigger next workflow
         if: success()
