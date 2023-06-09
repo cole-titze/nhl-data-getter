@@ -9,7 +9,7 @@
         /// <returns>Number of games in the season</returns>
         public static int Map(dynamic scheduleResponse)
         {
-            return scheduleResponse.SeasonGameCount;
+            return scheduleResponse.totalGames;
         }
     }
 }

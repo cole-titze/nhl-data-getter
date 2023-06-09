@@ -20,7 +20,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithInvalidResponse_ShouldThrowError()
         {
             dynamic message = new FakeScheduleData();
-            message.SeasonGameCount = null;
+            message.totalGames = null;
 
             Action testMap = () => MapPlayerBioResponseToName.Map(message);
 
@@ -32,7 +32,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int exceptedSeasonGameCount = 1203;
 
             dynamic message = new FakeScheduleData();
-            message.SeasonGameCount = exceptedSeasonGameCount;
+            message.totalGames = exceptedSeasonGameCount;
 
             int totalItems = MapScheduleToGameCount.Map(message);
 

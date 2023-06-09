@@ -26,7 +26,7 @@ namespace ServicesTests.UnitTests.NhlData.Fakes
             if(url == ScheduleUrl && query == ValidScheduleQuery)
             {
                 response = new FakeScheduleData();
-                response.SeasonGameCount = 200;
+                response.totalGames = 200;
                 return Task.FromResult<dynamic?>(response);
             }
 

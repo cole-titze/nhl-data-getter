@@ -2,6 +2,6 @@
 {
     public class FakeScheduleData
     {
-        public int? SeasonGameCount { get; set; }
+        public int? totalGames { get; set; }
     }
 }
