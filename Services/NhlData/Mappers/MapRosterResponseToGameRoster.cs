@@ -46,21 +46,29 @@ namespace Services.NhlData.Mappers
 
             var homePlayers = rosterResponse.liveData.boxscore.teams.home.skaters;
             var awayPlayers = rosterResponse.liveData.boxscore.teams.away.skaters;
-            foreach (var playerId in homePlayers)
+            foreach (int playerId in homePlayers)
             {
+                // Remove duplicate players
+                if (roster.homeTeam.Where(i => i.gameId == gameId && i.playerId == playerId).Any())
+                    continue;
+
                 roster.homeTeam.Add(new DbGamePlayer()
                 {
-                    playerId = (int)playerId,
+                    playerId = playerId,
                     teamId = homeTeamId,
                     gameId = gameId,
                     seasonStartYear = seasonStartYear,
                 });
             }
-            foreach (var playerId in awayPlayers)
+            foreach (int playerId in awayPlayers)
             {
+                // Remove duplicate players
+                if (roster.awayTeam.Where(i => i.gameId == gameId && i.playerId == playerId).Any())
+                    continue;
+
                 roster.awayTeam.Add(new DbGamePlayer()
                 {
-                    playerId = (int)playerId,
+                    playerId = playerId,
                     teamId = awayTeamId,
                     gameId = gameId,
                     seasonStartYear = seasonStartYear,
