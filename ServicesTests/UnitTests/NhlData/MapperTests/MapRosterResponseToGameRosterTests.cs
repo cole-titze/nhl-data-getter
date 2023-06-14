@@ -13,9 +13,9 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
     {
         internal static dynamic? GetFullMessage()
         {
-            int[] expectedHomePlayerIds = { 3, 4, 32, 34524, 5323, 243424, 4235324, 23432, 34534, 23235, 2344232, 3245322, 2342, 23423, 1221, 9809, 90880, 98009, 908908, 9809, 89, 979090, 768, 34 };
-            int[] expectedHomeGoalieIds = { 12, 32 };
-            int[] expectedAwayPlayerIds = { 4, 3489934, 4334, 32, 328872377 };
+            int[] expectedHomePlayerIds = { 3, 4, 12, 34524, 5323, 243424, 4235324, 23432, 34534, 23235, 2344232, 3245322, 2342, 23423, 1221, 9809, 90880, 98009, 908908, 98095, 89, 979090, 768, 34 };
+            int[] expectedHomeGoalieIds = { 125, 325 };
+            int[] expectedAwayPlayerIds = { 2, 3489934, 4334, 352, 328872377 };
             int[] expectedAwayGoalieIds = { 123, 129 };
             int homeTeamId = 5;
             int awayTeamId = 21;
@@ -248,7 +248,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomePlayerCount = 0;
             int[] expectedHomePlayerIds = { };
             int expectedAwayPlayerCount = 5;
-            int[] expectedAwayPlayerIds = { 4, 3489934, 4334, 32, 328872377 };
+            int[] expectedAwayPlayerIds = { 2, 3489934, 4334, 352, 328872377 };
             int expectedSeasonStartYear = 2021;
             int homeTeamId = 5;
             int awayTeamId = 21;
@@ -271,9 +271,9 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToMapPlayedGame_WithValidResponseAndManyPlayers_ShouldReturnCorrectRosters()
         {
             int expectedHomePlayerCount = 24;
-            int[] expectedHomePlayerIds = { 3, 4, 32, 34524, 5323, 243424, 4235324, 23432, 34534, 23235, 2344232, 3245322, 2342, 23423, 1221, 9809, 90880, 98009, 908908, 9809, 89, 979090, 768, 34 };
+            int[] expectedHomePlayerIds = { 3, 4, 12, 34524, 5323, 243424, 4235324, 23432, 34534, 23235, 2344232, 3245322, 2342, 23423, 1221, 9809, 90880, 98009, 908908, 98095, 89, 979090, 768, 34 };
             int expectedAwayPlayerCount = 5;
-            int[] expectedAwayPlayerIds = { 4, 3489934, 4334, 32, 328872377 };
+            int[] expectedAwayPlayerIds = { 2, 3489934, 4334, 352, 328872377 };
             int expectedSeasonStartYear = 2021;
             int homeTeamId = 5;
             int awayTeamId = 21;
@@ -297,10 +297,10 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         {
             dynamic? message = GetFullMessage();
             int expectedHomePlayerCount = 24;
-            int[] expectedHomePlayerIds = { 3, 4, 32, 34524, 5323, 243424, 4235324, 23432, 34534, 23235, 2344232, 3245322, 2342, 23423, 1221, 9809, 90880, 98009, 908908, 9809, 89, 979090, 768, 34 };
+            int[] expectedHomePlayerIds = { 3, 4, 12, 34524, 5323, 243424, 4235324, 23432, 34534, 23235, 2344232, 3245322, 2342, 23423, 1221, 9809, 90880, 98009, 908908, 98095, 89, 979090, 768, 34 };
             int expectedHomeGoalieCount = 2;
             int expectedAwayPlayerCount = 5;
-            int[] expectedAwayPlayerIds = { 4, 3489934, 4334, 32, 328872377 };
+            int[] expectedAwayPlayerIds = { 2, 3489934, 4334, 352, 328872377 };
             int expectedAwayGoalieCount = 2;
             int expectedSeasonStartYear = 2021;
             int homeTeamId = 5;
