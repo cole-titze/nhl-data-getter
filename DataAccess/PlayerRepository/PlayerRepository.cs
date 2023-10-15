@@ -21,6 +21,8 @@ namespace DataAccess.PlayerRepository
             var updateList = new List<DbPlayer>();
             foreach (var player in playersWithValues)
             {
+                player.value = BuildPlayerValue(player);
+
                 var dbPlayer = _dbContext.PlayerValue.FirstOrDefault(p => p.id == player.id && p.seasonStartYear == player.seasonStartYear);
                 if (dbPlayer == null)
                     addList.Add(player);
@@ -36,6 +38,23 @@ namespace DataAccess.PlayerRepository
 
             await _dbContext.SaveChangesAsync();
         }
+        /// <summary>
+        /// Checks for a player value. If the player has a value of 0 attempts to use the previous years value, otherwise keeps 0.
+        /// </summary>
+        /// <param name="player">The player to fill the value for</param>
+        /// <returns>The player with a filled value</returns>
+        private double BuildPlayerValue(DbPlayer player)
+        {
+            if (player.value == 0)
+            {
+                var playerLastYear = _dbContext.PlayerValue.FirstOrDefault(p => p.id == player.id && p.seasonStartYear == player.seasonStartYear - 1);
+                if (playerLastYear != null)
+                    player.value = playerLastYear.value;
+            }
+
+            return player.value;
+        }
+
         /// <summary>
         /// Gets the number of players in the database for a given season.
         /// </summary>
