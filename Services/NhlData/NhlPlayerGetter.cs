@@ -67,6 +67,7 @@ namespace Services.NhlData
             if (_cachedTeamRoster.ContainsKey(teamId))
             {
                 players.AddRange(_cachedTeamRoster[teamId]);
+                players.ForEach(x => x.gameId = game.id);
             }
             else
             {
