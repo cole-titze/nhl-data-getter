@@ -66,8 +66,12 @@ namespace Services.NhlData
 
             if (_cachedTeamRoster.ContainsKey(teamId))
             {
-                players.AddRange(_cachedTeamRoster[teamId]);
-                players.ForEach(x => x.gameId = game.id);
+                foreach(var player in _cachedTeamRoster[teamId])
+                {
+                    var clonedPlayer = new DbGamePlayer();
+                    clonedPlayer.Clone(player, game.id);
+                    players.Add(clonedPlayer);
+                }
             }
             else
             {
