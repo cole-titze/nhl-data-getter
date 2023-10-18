@@ -14,11 +14,21 @@ namespace Services.NhlData.Mappers
             var homeTeam = message.liveData.boxscore.teams.home.teamStats.teamSkaterStats;
             var awayTeam = message.liveData.boxscore.teams.away.teamStats.teamSkaterStats;
 
+            // If shootout update goals
+            var homeGoals = (int)homeTeam.goals;
+            var awayGoals = (int)awayTeam.goals;
+            if (homeGoals == awayGoals)
+            {
+                homeGoals = message.liveData.linescore.teams.home.goals;
+                awayGoals = message.liveData.linescore.teams.away.goals;
+            }
+
+
             var game = new DbGame()
             {
                 id = (int)message.gamePk,
-                homeGoals = (int)homeTeam.goals,
-                awayGoals = (int)awayTeam.goals,
+                homeGoals = homeGoals,
+                awayGoals = awayGoals,
                 homeTeamId = (int)message.gameData.teams.home.id,
                 awayTeamId = (int)message.gameData.teams.away.id,
                 homeSOG = (int)homeTeam.shots,
@@ -37,7 +47,7 @@ namespace Services.NhlData.Mappers
                 awayTakeaways = (int)awayTeam.takeaways,
                 homeGiveaways = (int)homeTeam.giveaways,
                 awayGiveaways = (int)awayTeam.giveaways,
-                winner = GetWinner((int)homeTeam.goals, (int)awayTeam.goals),
+                winner = GetWinner(homeGoals, awayGoals),
                 seasonStartYear = GetSeason((string)message.gameData.game.season),
                 gameDate = DateTime.Parse((string)message.gameData.datetime.dateTime),
                 hasBeenPlayed = (message.gameData.status.detailedState == "Final") ? true : false,
