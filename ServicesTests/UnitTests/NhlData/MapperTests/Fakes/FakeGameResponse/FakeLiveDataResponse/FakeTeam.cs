@@ -5,6 +5,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests.Fakes.FakeGameResponse.Fak
     public class FakeTeam
     {
         public int id { get; set; }
+        public int teamId { get; set; }
         public string powerPlayConversion { get; set; } = "";
         public int score { get; set; }
         public int sog { get; set; }

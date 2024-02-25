@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.CSharp.RuntimeBinder;
+using Services.NhlData;
 using Services.NhlData.Mappers;
 using ServicesTests.UnitTests.NhlData.MapperTests.Fakes.FakeGameResponse.FakeScheduleResponse;
 
@@ -30,11 +31,18 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithValidResponse_ShouldGetGameCount()
         {
             int exceptedSeasonGameCount = 1203;
+            int seasonYear = 20202021;
+            int nonSeasonYear = 20222023;
 
             dynamic message = new FakeScheduleData();
-            message.totalGames = exceptedSeasonGameCount;
+            message.data = new List<FakeData>() { new FakeData(), new FakeData() };
+            message.data[0].totalRegularSeasonGames = 200;
+            message.data[0].id = nonSeasonYear;
 
-            int totalItems = MapScheduleToGameCount.Map(message);
+            message.data[1].id = seasonYear;
+            message.data[1].totalRegularSeasonGames = exceptedSeasonGameCount;
+
+            int totalItems = MapScheduleToGameCount.Map(message, seasonYear);
 
             totalItems.Should().Be(exceptedSeasonGameCount);
         }

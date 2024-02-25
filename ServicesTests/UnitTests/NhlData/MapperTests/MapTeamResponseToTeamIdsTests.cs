@@ -3,6 +3,7 @@ using Services.NhlData.Mappers;
 using ServicesTests.UnitTests.NhlData.MapperTests.Fakes.FakeGameResponse.FakeTeamResponse;
 using ServicesTests.UnitTests.NhlData.MapperTests.Fakes.FakeGameResponse.FakeLiveDataResponse;
 using Microsoft.CSharp.RuntimeBinder;
+using ServicesTests.UnitTests.NhlData.MapperTests.Fakes.FakeGameResponse.FakeScheduleResponse;
 
 namespace ServicesTests.UnitTests.NhlData.MapperTests
 {
@@ -13,7 +14,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithNullResponse_ShouldThrowError()
         {
             dynamic message = new FakeTeamDataResponse();
-            message.teams = null;
+            message.data = null;
 
 
             Action testMap = () => MapTeamResponseToTeamIds.Map(message);
@@ -34,7 +35,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         {
             int expectedTeamCount = 0;
             dynamic message = new FakeTeamDataResponse();
-            message.teams = new FakeTeam[0];
+            message.data = new List<FakeTeam>();
 
             List<int> teamIds = MapTeamResponseToTeamIds.Map(message);
 
@@ -51,10 +52,10 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             var teams = new List<FakeTeam>();
             for (int i = 0; i < expectedTeamCount; i++)
             {
-                var team = new FakeTeam() { id = expectedTeamIds[i] };
+                var team = new FakeTeam() { teamId = expectedTeamIds[i] };
                 teams.Add(team);
             }
-            message.teams = teams.ToArray();
+            message.data = teams.ToList();
 
             List<int> teamIds = MapTeamResponseToTeamIds.Map(message);
 
@@ -76,10 +77,10 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             var teams = new List<FakeTeam>();
             for (int i = 0; i < expectedTeamCount; i++)
             {
-                var team = new FakeTeam() { id = expectedTeamIds[i] };
+                var team = new FakeTeam() { teamId = expectedTeamIds[i] };
                 teams.Add(team);
             }
-            message.teams = teams.ToArray();
+            message.data = teams.ToList();
 
             List<int> teamIds = MapTeamResponseToTeamIds.Map(message);
 

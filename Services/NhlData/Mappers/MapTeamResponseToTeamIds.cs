@@ -10,9 +10,9 @@
 		public static List<int> Map(dynamic teamResponse)
 		{
 			var teamIds = new List<int>();
-			foreach(var team in teamResponse.teams)
+			foreach(var team in teamResponse.data)
 			{
-				int teamId = Convert.ToInt32(team.id);
+				int teamId = Convert.ToInt32(team.teamId);
 				teamIds.Add(teamId);
 			}
 

@@ -4,6 +4,9 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests.Fakes.FakeGameResponse.Fak
 {
     public class FakeTeamDataResponse
     {
+        public List<FakeTeam> data { get; set; } = new List<FakeTeam>();
+
+        // Legacy api
         public FakeTeam[] teams { get; set; } = new FakeTeam[] { new FakeTeam() };
     }
 }
