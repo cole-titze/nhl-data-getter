@@ -20,10 +20,10 @@ namespace Services.NhlData
         /// </summary>
         /// <param name="gameId">The game to get</param>
         /// <returns>A game object corresponding to the id passed in</returns>
-        /// Example Request: http://statsapi.web.nhl.com/api/v1/game/2019020001/feed/live
+        /// Example Request: https://api-web.nhle.com/v1/gamecenter/2023020204/boxscore
         public async Task<DbGame> GetGame(int gameId)
         { 
-            string url = "http://statsapi.web.nhl.com/api/v1/game/";
+            string url = "http://api-web.nhle.com/v1/gamecenter/";
             string query = GetGameQuery(gameId);
             var gameResponse = await _requestMaker.MakeRequest(url, query);
             if (gameResponse == null)
@@ -31,19 +31,19 @@ namespace Services.NhlData
                 _logger.LogWarning("Failed to get game with id: " + gameId.ToString());
                 return new DbGame();
             }
-            if (InvalidGame(gameResponse))
+            if (IsGameInProgress(gameResponse))
                 return new DbGame();
 
             return MapGameResponseToGame.Map(gameResponse);
         }
         /// <summary>
-        /// If game is not over, null was found, or both faceoffs were 0 the game is invalid
+        /// Determines if a game is in progress or not
         /// </summary>
         /// <param name="message">response from nhl api</param>
-        /// <returns></returns>
-        private bool InvalidGame(dynamic message)
+        /// <returns>True if game is in progress, otherwise false</returns>
+        private static bool IsGameInProgress(dynamic message)
         {
-            if (message.gameData.status.detailedState != "Final" && message.gameData.status.detailedState != "Scheduled")
+            if (message.gameState != "OFF" && message.gameState != "FUT")
                 return true;
 
             return false;
@@ -51,12 +51,11 @@ namespace Services.NhlData
         /// <summary>
         /// Creates the game query
         /// </summary>
-        /// <param name="seasonStartYear"></param>
         /// <param name="id"></param>
         /// <returns>Game query string</returns>
-        private string GetGameQuery(int id)
+        private static string GetGameQuery(int id)
         {
-            string urlParameters = $"{id}/feed/live";
+            string urlParameters = $"{id}/boxscore";
 
             return urlParameters;
         }

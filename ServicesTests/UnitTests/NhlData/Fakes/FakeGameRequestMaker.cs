@@ -12,20 +12,20 @@ namespace ServicesTests.UnitTests.NhlData.Fakes
         {
             dynamic? response = null;
 
-            if (query == "2021020001/feed/live")
+            if (query == "2021020001/boxscore")
             {
                 response = null;
                 return Task.FromResult<dynamic?>(response);
             }
             response = new FakeGameResponse();
-            if (query == "2021020002/feed/live")
+            if (query == "2021020002/boxscore")
             {
-                response.gameData.status.detailedState = "Ongoing";
+                response.gameState = "LIVE";
                 return Task.FromResult<dynamic?>(response);
             }
-            response.gameData.status.detailedState = "Final";
-            response.gameData.game.season = "2021020100";
-            response.gameData.datetime.dateTime = "02/27/2021";
+            response.gameState = "OFF";
+            response.season = "2021020100";
+            response.startTimeUTC = "02/27/2021";
             return Task.FromResult<dynamic?>(response);
         }
     }

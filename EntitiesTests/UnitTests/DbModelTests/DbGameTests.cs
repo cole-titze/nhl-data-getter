@@ -28,10 +28,6 @@ namespace EntitiesTests.UnitTests.DbModelTests
             copy.awayBlockedShots.Should().Be(cut.awayBlockedShots);
             copy.homeHits.Should().Be(cut.homeHits);
             copy.awayHits.Should().Be(cut.awayHits);
-            copy.homeTakeaways.Should().Be(cut.homeTakeaways);
-            copy.awayTakeaways.Should().Be(cut.awayTakeaways);
-            copy.homeGiveaways.Should().Be(cut.homeGiveaways);
-            copy.awayGiveaways.Should().Be(cut.awayGiveaways);
             copy.hasBeenPlayed.Should().Be(cut.hasBeenPlayed);
         }
         [TestMethod]
@@ -91,10 +87,6 @@ namespace EntitiesTests.UnitTests.DbModelTests
                 awayBlockedShots = 6,
                 homeHits = 12,
                 awayHits = 6,
-                homeTakeaways = 12,
-                awayTakeaways = 5,
-                homeGiveaways = 5,
-                awayGiveaways = 12,
                 hasBeenPlayed = true,
             };
 

@@ -1,56 +1,58 @@
 ﻿using Entities.DbModels;
+using Newtonsoft.Json.Linq;
 
 namespace Services.NhlData.Mappers
 {
-	public static class MapGameResponseToGame
-	{
+    public static class MapGameResponseToGame
+    {
         /// <summary>
         /// Maps the response from the nhl's api to a game object
         /// </summary>
         /// <param name="message">Response from nhl api</param>
         /// <returns>Game Object</returns>
 		public static DbGame Map(dynamic message)
-		{
-            var homeTeam = message.liveData.boxscore.teams.home.teamStats.teamSkaterStats;
-            var awayTeam = message.liveData.boxscore.teams.away.teamStats.teamSkaterStats;
+        {
+            var homeTeam = message.homeTeam;
+            var awayTeam = message.awayTeam;
+
+            var homePowerPlayConversionStr = (string)homeTeam.powerPlayConversion;
+            var awayPowerPlayConversionStr = (string)awayTeam.powerPlayConversion;
+            _ = int.TryParse(new string(homePowerPlayConversionStr.TakeWhile(Char.IsDigit).ToArray()), out int homePpg);
+            _ = int.TryParse(new string(awayPowerPlayConversionStr.TakeWhile(Char.IsDigit).ToArray()), out int awayPpg);
 
             // If shootout update goals
-            var homeGoals = (int)homeTeam.goals;
-            var awayGoals = (int)awayTeam.goals;
+            var homeGoals = (int)homeTeam.score;
+            var awayGoals = (int)awayTeam.score;
             if (homeGoals == awayGoals)
             {
-                homeGoals = message.liveData.linescore.teams.home.goals;
-                awayGoals = message.liveData.linescore.teams.away.goals;
+                homeGoals = message.linescore.totals.home;
+                awayGoals = message.linescore.totals.away;
             }
 
 
             var game = new DbGame()
             {
-                id = (int)message.gamePk,
+                id = (int)message.id,
                 homeGoals = homeGoals,
                 awayGoals = awayGoals,
-                homeTeamId = (int)message.gameData.teams.home.id,
-                awayTeamId = (int)message.gameData.teams.away.id,
-                homeSOG = (int)homeTeam.shots,
-                awaySOG = (int)awayTeam.shots,
-                homePPG = (int)homeTeam.powerPlayGoals,
-                awayPPG = (int)awayTeam.powerPlayGoals,
+                homeTeamId = (int)homeTeam.id,
+                awayTeamId = (int)awayTeam.id,
+                homeSOG = (int)homeTeam.sog,
+                awaySOG = (int)awayTeam.sog,
+                homePPG = homePpg,
+                awayPPG = awayPpg,
                 homePIM = (int)homeTeam.pim,
                 awayPIM = (int)awayTeam.pim,
-                homeFaceOffWinPercent = (double)homeTeam.faceOffWinPercentage,
-                awayFaceOffWinPercent = (double)awayTeam.faceOffWinPercentage,
-                homeBlockedShots = (int)homeTeam.blocked,
-                awayBlockedShots = (int)awayTeam.blocked,
+                homeFaceOffWinPercent = (double)homeTeam.faceoffWinningPctg,
+                awayFaceOffWinPercent = (double)awayTeam.faceoffWinningPctg,
+                homeBlockedShots = (int)homeTeam.blocks,
+                awayBlockedShots = (int)awayTeam.blocks,
                 homeHits = (int)homeTeam.hits,
                 awayHits = (int)awayTeam.hits,
-                homeTakeaways = (int)homeTeam.takeaways,
-                awayTakeaways = (int)awayTeam.takeaways,
-                homeGiveaways = (int)homeTeam.giveaways,
-                awayGiveaways = (int)awayTeam.giveaways,
                 winner = GetWinner(homeGoals, awayGoals),
-                seasonStartYear = GetSeason((string)message.gameData.game.season),
-                gameDate = DateTime.Parse((string)message.gameData.datetime.dateTime),
-                hasBeenPlayed = (message.gameData.status.detailedState == "Final") ? true : false,
+                seasonStartYear = GetSeason((string)message.season),
+                gameDate = DateTime.Parse((string)message.startTimeUTC),
+                hasBeenPlayed = (message.gameState == "OFF") ? true : false,
             };
 
             return game;
@@ -79,4 +81,3 @@ namespace Services.NhlData.Mappers
         }
     }
 }
-

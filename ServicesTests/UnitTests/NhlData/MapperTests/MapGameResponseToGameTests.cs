@@ -13,8 +13,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public dynamic ValidResponseFactory()
         {
             dynamic message = new FakeGameResponse();
-            message.gameData.game.season = "20212022";
-            message.gameData.datetime.dateTime = DateTime.Parse("1/1/2022").ToString();
+            message.season = "20212022";
+            message.startTimeUTC = DateTime.Parse("1/1/2022").ToString();
 
             return message;
         }
@@ -32,8 +32,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         {
             dynamic message = new FakeGameResponse()
             {
-                liveData = null,
-                gameData = new FakeGameData(),
+                homeTeam = null
             };
 
             Action testMap = () => MapGameResponseToGame.Map(message);
@@ -44,7 +43,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithEmptySeasonInResponse_ShouldThrowError()
         {
             dynamic message = new FakeGameResponse();
-            message.gameData.game.season = "";
+            message.season = "";
 
             Action testMap = () => MapGameResponseToGame.Map(message);
 
@@ -54,7 +53,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithInvalidSeason_ShouldThrowError()
         {
             dynamic message = ValidResponseFactory();
-            message.gameData.game.season = "adk2022";
+            message.season = "adk2022";
 
             Action testMap = () => MapGameResponseToGame.Map(message);
 
@@ -67,7 +66,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedSeason = 2021;
 
             dynamic message = ValidResponseFactory();
-            message.gameData.game.season = givenSeason;
+            message.season = givenSeason;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -77,8 +76,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithInvalidDateTimeResponse_ShouldThrowError()
         {
             dynamic message = new FakeGameResponse();
-            message.gameData.game.season = "20212022";
-            message.gameData.datetime.dateTime = "";
+            message.season = "20212022";
+            message.startTimeUTC = "";
 
             Action testMap = () => MapGameResponseToGame.Map(message);
 
@@ -99,7 +98,7 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         {
             int expectedId = 7;
             dynamic message = ValidResponseFactory();
-            message.gamePk = expectedId;
+            message.id = expectedId;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -111,8 +110,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeGoals = 7;
             int expectedAwayGoals = 2;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.goals = expectedHomeGoals;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.goals = expectedAwayGoals;
+            message.homeTeam.score = expectedHomeGoals;
+            message.awayTeam.score = expectedAwayGoals;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -125,8 +124,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeGoals = 7;
             int expectedAwayGoals = 2;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.goals = expectedHomeGoals;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.goals = expectedAwayGoals;
+            message.homeTeam.score = expectedHomeGoals;
+            message.awayTeam.score = expectedAwayGoals;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -138,8 +137,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeGoals = 1;
             int expectedAwayGoals = 2;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.goals = expectedHomeGoals;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.goals = expectedAwayGoals;
+            message.homeTeam.score = expectedHomeGoals;
+            message.awayTeam.score = expectedAwayGoals;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -151,8 +150,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeTeamId = 33;
             int expectedAwayTeamId = 6;
             dynamic message = ValidResponseFactory();
-            message.gameData.teams.home.id = expectedHomeTeamId;
-            message.gameData.teams.away.id = expectedAwayTeamId;
+            message.homeTeam.id = expectedHomeTeamId;
+            message.awayTeam.id = expectedAwayTeamId;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -165,8 +164,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeShots = 35;
             int expectedAwayShots = 27;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.shots = expectedHomeShots;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.shots = expectedAwayShots;
+            message.homeTeam.sog = expectedHomeShots;
+            message.awayTeam.sog = expectedAwayShots;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -179,8 +178,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomePPG = 2;
             int expectedAwayPPG = 0;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.powerPlayGoals = expectedHomePPG;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.powerPlayGoals = expectedAwayPPG;
+            message.homeTeam.powerPlayConversion = "2/4";
+            message.awayTeam.powerPlayConversion = "0/0";
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -193,8 +192,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomePIM = 17;
             int expectedAwayPIM = 4;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.pim = expectedHomePIM;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.pim = expectedAwayPIM;
+            message.homeTeam.pim = expectedHomePIM;
+            message.awayTeam.pim = expectedAwayPIM;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -207,8 +206,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             double expectedHomeFaceOffWinPercent = .56;
             double expectedAwayFaceOffWinPercent = .44;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.faceOffWinPercentage = expectedHomeFaceOffWinPercent;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.faceOffWinPercentage = expectedAwayFaceOffWinPercent;
+            message.homeTeam.faceoffWinningPctg = expectedHomeFaceOffWinPercent;
+            message.awayTeam.faceoffWinningPctg = expectedAwayFaceOffWinPercent;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -221,8 +220,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeBlockedShots = 17;
             int expectedAwayBlockedShots = 4;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.blocked = expectedHomeBlockedShots;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.blocked = expectedAwayBlockedShots;
+            message.homeTeam.blocks = expectedHomeBlockedShots;
+            message.awayTeam.blocks = expectedAwayBlockedShots;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -235,8 +234,8 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             int expectedHomeHits = 17;
             int expectedAwayHits = 4;
             dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.hits = expectedHomeHits;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.hits = expectedAwayHits;
+            message.homeTeam.hits = expectedHomeHits;
+            message.awayTeam.hits = expectedAwayHits;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -244,40 +243,12 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
             game.awayHits.Should().Be(expectedAwayHits);
         }
         [TestMethod]
-        public void CallToCut_WithTakeaways_ShouldReturnCorrectTakeaways()
-        {
-            int expectedHomeTakeaways = 3;
-            int expectedAwayTakeaways = 12;
-            dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.takeaways = expectedHomeTakeaways;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.takeaways = expectedAwayTakeaways;
-
-            DbGame game = MapGameResponseToGame.Map(message);
-
-            game.homeTakeaways.Should().Be(expectedHomeTakeaways);
-            game.awayTakeaways.Should().Be(expectedAwayTakeaways);
-        }
-        [TestMethod]
-        public void CallToCut_WithGiveaways_ShouldReturnCorrectGiveaways()
-        {
-            int expectedHomeGiveaways = 3;
-            int expectedAwayGiveaways = 12;
-            dynamic message = ValidResponseFactory();
-            message.liveData.boxscore.teams.home.teamStats.teamSkaterStats.giveaways = expectedHomeGiveaways;
-            message.liveData.boxscore.teams.away.teamStats.teamSkaterStats.giveaways = expectedAwayGiveaways;
-
-            DbGame game = MapGameResponseToGame.Map(message);
-
-            game.homeGiveaways.Should().Be(expectedHomeGiveaways);
-            game.awayGiveaways.Should().Be(expectedAwayGiveaways);
-        }
-        [TestMethod]
         public void CallToCut_WithFinalState_ShouldReturnHasBeenPlayed()
         {
             bool expectedState = true;
-            string givenState = "Final";
+            string givenState = "OFF";
             dynamic message = ValidResponseFactory();
-            message.gameData.status.detailedState = givenState;
+            message.gameState = givenState;
 
             DbGame game = MapGameResponseToGame.Map(message);
 
@@ -287,9 +258,9 @@ namespace ServicesTests.UnitTests.NhlData.MapperTests
         public void CallToCut_WithInProgressState_ShouldReturnHasNotBeenPlayed()
         {
             bool expectedState = false;
-            string givenState = "In Progress";
+            string givenState = "LIVE";
             dynamic message = ValidResponseFactory();
-            message.gameData.status.detailedState = givenState;
+            message.gameState = givenState;
 
             DbGame game = MapGameResponseToGame.Map(message);
 

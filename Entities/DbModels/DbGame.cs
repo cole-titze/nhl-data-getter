@@ -27,10 +27,6 @@
         public int awayBlockedShots { get; set; }
         public int homeHits { get; set; }
         public int awayHits { get; set; }
-        public int homeTakeaways { get; set; }
-        public int awayTakeaways { get; set; }
-        public int homeGiveaways { get; set; }
-        public int awayGiveaways { get; set; }
         public bool hasBeenPlayed { get; set; }
 
         public void Clone(DbGame game)
@@ -55,10 +51,6 @@
             awayBlockedShots = game.awayBlockedShots;
             homeHits = game.homeHits;
             awayHits = game.awayHits;
-            homeTakeaways = game.homeTakeaways;
-            awayTakeaways = game.awayTakeaways;
-            homeGiveaways = game.homeGiveaways;
-            awayGiveaways = game.awayGiveaways;
             hasBeenPlayed = game.hasBeenPlayed;
         }
         /// <summary>
