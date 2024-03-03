@@ -1,4 +1,5 @@
-﻿using Entities.DbModels;
+﻿using System.Numerics;
+using Entities.DbModels;
 using Entities.Models;
 using Entities.Types.Mappers;
 
@@ -13,32 +14,67 @@ namespace Services.NhlData.Mappers
         /// <returns>Player stats object</returns>
 		public static IPlayerStats BuildPlayerStats(dynamic playerStatResponse)
 		{
-            if (playerStatResponse.stats[0].splits.Count == 0)
+            if (playerStatResponse.total == 0)
                 return new PlayerStats();
-            var rawPlayer = playerStatResponse.stats[0].splits[0].stat;
+            var rawPlayerStats = playerStatResponse.data;
             IPlayerStats playerStats;
 
-            if (rawPlayer.faceOffPct == null)
+            // Goalie stats
+            if (rawPlayerStats[0].positionCode == null)
             {
+                int goalsAgainst = 0;
+                int saves = 0;
+                int gamesStarted = 0;
+                foreach(var teamStat in rawPlayerStats)
+                {
+                    goalsAgainst += (int)teamStat.goalsAgainst;
+                    saves += (int)teamStat.saves;
+                    gamesStarted += (int)teamStat.gamesStarted;
+                };
+
                 playerStats = new GoalieStats()
                 {
-                    goalsAgainst = rawPlayer.goalsAgainst,
-                    saves = rawPlayer.saves,
-                    gamesStarted = rawPlayer.gamesStarted,
+                    goalsAgainst = goalsAgainst,
+                    saves = saves,
+                    gamesStarted = gamesStarted,
                 };
+
                 return playerStats;
             }
 
+            // Skater stats
+            int gameCount = 0;
+            int faceOffPct = 0;
+            int plusMinus = 0;
+            int penaltyMinutes = 0;
+            int blockedShots = 0;
+            int shotsOnGoal = 0;
+            int assists = 0;
+            int goals = 0;
+
+            foreach (var teamStat in rawPlayerStats)
+            {
+                gameCount += (int)teamStat.gamesPlayed;
+                faceOffPct += teamStat.faceoffWinPct != null ? (int)teamStat.faceoffWinPct : 0;
+                plusMinus += (int)teamStat.plusMinus;
+                penaltyMinutes += (int)teamStat.penaltyMinutes;
+                blockedShots += 0; // New api doesn't have blocked shot data
+                shotsOnGoal += (int)teamStat.shots;
+                assists += (int)teamStat.assists;
+                goals += (int)teamStat.goals;
+            };
+
             playerStats =  new PlayerStats()
             {
-                gamesPlayed = rawPlayer.games,
-                faceoffPercent = (rawPlayer.faceOffPct / 100),
-                plusMinus = rawPlayer.plusMinus,
-                penaltyMinutes = rawPlayer.pim,
-                blockedShots = rawPlayer.blocked,
-                shotsOnGoal = rawPlayer.shots,
-                assists = rawPlayer.assists,
-                goals = rawPlayer.goals,
+                gamesPlayed = gameCount,
+                faceoffPercent = faceOffPct / (int)rawPlayerStats.total,
+                plusMinus = plusMinus,
+                penaltyMinutes = penaltyMinutes,
+                blockedShots = blockedShots,
+                shotsOnGoal = shotsOnGoal,
+                assists = assists,
+                goals = goals,
+                position = MapPositionStrToPosition.Map(rawPlayerStats[0].positionCode),
             };
 
             return playerStats;

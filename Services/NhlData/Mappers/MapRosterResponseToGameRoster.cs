@@ -1,4 +1,5 @@
-﻿using Entities.DbModels;
+﻿using System.Numerics;
+using Entities.DbModels;
 using Entities.Models;
 
 namespace Services.NhlData.Mappers
@@ -16,19 +17,37 @@ namespace Services.NhlData.Mappers
         {
             var roster = new List<DbGamePlayer>();
 
-            foreach(var player in rosterResponse.roster)
+            foreach(var player in rosterResponse.forwards)
             {
-                roster.Add(new DbGamePlayer()
-                {
-                    gameId = game.id,
-                    teamId = teamId,
-                    playerId = player.person.id,
-                    seasonStartYear = game.seasonStartYear,
-                });
+                roster = AddPlayer(roster, player, game, teamId);
+            }
+
+            foreach (var player in rosterResponse.defensemen)
+            {
+                roster = AddPlayer(roster, player, game, teamId);
+            }
+
+            foreach (var player in rosterResponse.goalies)
+            {
+                roster = AddPlayer(roster, player, game, teamId);
             }
 
             return roster;
         }
+
+        private static List<DbGamePlayer> AddPlayer(List<DbGamePlayer> roster, dynamic player, DbGame game, int teamId)
+        {
+            roster.Add(new DbGamePlayer()
+            {
+                gameId = game.id,
+                teamId = teamId,
+                playerId = player.person.id,
+                seasonStartYear = game.seasonStartYear,
+            });
+
+            return roster;
+        }
+
         /// <summary>
         /// Maps a roster response to a roster
         /// </summary>
@@ -38,16 +57,17 @@ namespace Services.NhlData.Mappers
         {
             var roster = new Roster();
 
-            string rawSeason = (string)rosterResponse.gameData.game.season;
-            var seasonStartYear = Convert.ToInt32(rawSeason.Substring(0, 4));
-            var gameId = Convert.ToInt32(rosterResponse.gameData.game.pk);
-            var homeTeamId = (int)rosterResponse.liveData.boxscore.teams.home.team.id;
-            var awayTeamId = (int)rosterResponse.liveData.boxscore.teams.away.team.id;
+            var seasonStartYear = (int)rosterResponse.season;
+            var gameId = (int)rosterResponse.id;
+            var homeTeamId = (int)rosterResponse.homeTeam.id;
+            var awayTeamId = (int)rosterResponse.awayTeam.id;
 
-            var homePlayers = rosterResponse.liveData.boxscore.teams.home.skaters;
-            var awayPlayers = rosterResponse.liveData.boxscore.teams.away.skaters;
-            foreach (int playerId in homePlayers)
+            // Forwards
+            var homeForwards = rosterResponse.playerByGameStats.homeTeam.forwards;
+            var awayForwards = rosterResponse.playerByGameStats.awayTeam.forwards;
+            foreach (var player in homeForwards)
             {
+                int playerId = (int)player.playerId;
                 // Remove duplicate players
                 if (roster.homeTeam.Where(i => i.gameId == gameId && i.playerId == playerId).Any())
                     continue;
@@ -60,8 +80,9 @@ namespace Services.NhlData.Mappers
                     seasonStartYear = seasonStartYear,
                 });
             }
-            foreach (int playerId in awayPlayers)
+            foreach (var player in awayForwards)
             {
+                int playerId = (int)player.playerId;
                 // Remove duplicate players
                 if (roster.awayTeam.Where(i => i.gameId == gameId && i.playerId == playerId).Any())
                     continue;
@@ -75,23 +96,58 @@ namespace Services.NhlData.Mappers
                 });
             }
 
-            var homeGoalies = rosterResponse.liveData.boxscore.teams.home.goalies;
-            var awayGoalies = rosterResponse.liveData.boxscore.teams.away.goalies;
-            foreach (var playerId in homeGoalies)
+            // Defenseman
+            var homeDefenseman = rosterResponse.playerByGameStats.homeTeam.defense;
+            var awayDefenseman = rosterResponse.playerByGameStats.awayTeam.defense;
+            foreach (var player in homeDefenseman)
             {
+                var playerId = (int)player.playerId;
+                // Remove duplicate players
+                if (roster.homeTeam.Where(i => i.gameId == gameId && i.playerId == playerId).Any())
+                    continue;
+
                 roster.homeTeam.Add(new DbGamePlayer()
                 {
-                    playerId = (int)playerId,
+                    playerId = playerId,
                     teamId = homeTeamId,
                     gameId = gameId,
                     seasonStartYear = seasonStartYear,
                 });
             }
-            foreach (var playerId in awayGoalies)
+            foreach (var player in awayDefenseman)
+            {
+                var playerId = (int)player.playerId;
+                // Remove duplicate players
+                if (roster.awayTeam.Where(i => i.gameId == gameId && i.playerId == playerId).Any())
+                    continue;
+
+                roster.awayTeam.Add(new DbGamePlayer()
+                {
+                    playerId = player.playerId,
+                    teamId = awayTeamId,
+                    gameId = gameId,
+                    seasonStartYear = seasonStartYear,
+                });
+            }
+
+            // Goalies
+            var homeGoalies = rosterResponse.playerByGameStats.awayTeam.goalies;
+            var awayGoalies = rosterResponse.playerByGameStats.awayTeam.goalies;
+            foreach (var player in homeGoalies)
+            {
+                roster.homeTeam.Add(new DbGamePlayer()
+                {
+                    playerId = (int)player.playerId,
+                    teamId = homeTeamId,
+                    gameId = gameId,
+                    seasonStartYear = seasonStartYear,
+                });
+            }
+            foreach (var player in awayGoalies)
             {
                 roster.awayTeam.Add(new DbGamePlayer()
                 {
-                    playerId = (int)playerId,
+                    playerId = (int)player.playerId,
                     teamId = awayTeamId,
                     gameId = gameId,
                     seasonStartYear = seasonStartYear,

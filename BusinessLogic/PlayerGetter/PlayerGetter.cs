@@ -1,4 +1,5 @@
 ﻿using DataAccess.PlayerRepository;
+using DataAccess.TeamRepository;
 using Entities.DbModels;
 using Entities.Types;
 using Microsoft.Extensions.Logging;
@@ -10,12 +11,14 @@ namespace BusinessLogic.PlayerGetter
 	{
         private const int PLAYER_CUTOFF = 300;
         private readonly IPlayerRepository _playerRepo;
+        private readonly ITeamRepository _teamRepository;
         private readonly NhlDataGetter _nhlDataGetter;
         private readonly ILogger<PlayerGetter> _logger;
-        public PlayerGetter(IPlayerRepository playerRepo, NhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
+        public PlayerGetter(IPlayerRepository playerRepo, ITeamRepository teamRepo, NhlDataGetter nhlDataGetter, ILoggerFactory loggerFactory)
 		{
 			_playerRepo = playerRepo;
-			_nhlDataGetter = nhlDataGetter;
+            _teamRepository = teamRepo;
+            _nhlDataGetter = nhlDataGetter;
             _logger = loggerFactory.CreateLogger<PlayerGetter>();
 		}
         /// <summary>
@@ -55,7 +58,8 @@ namespace BusinessLogic.PlayerGetter
             var teamIds = await _nhlDataGetter.ScheduleDataGetter.GetTeamsForSeason(seasonStartYear);
             foreach(var teamId in teamIds)
             {
-                var playersOnTeam = await GetPlayersOnTeamBySeason(seasonStartYear, teamId);
+                var teamAbbr = await _teamRepository.GetTeam(teamId);
+                var playersOnTeam = await GetPlayersOnTeamBySeason(seasonStartYear, teamAbbr.abbreviation);
                 seasonPlayers.AddRange(playersOnTeam);
             }
 
@@ -68,9 +72,9 @@ namespace BusinessLogic.PlayerGetter
         /// </summary>
         /// <param name="teamId">The team id</param>
         /// <returns>A list of players on the team</returns>
-        private async Task<List<DbPlayer>> GetPlayersOnTeamBySeason(int seasonStartYear, int teamId)
+        private async Task<List<DbPlayer>> GetPlayersOnTeamBySeason(int seasonStartYear, string teamAbbr)
         {
-            var playerIds = await _nhlDataGetter.PlayerDataGetter.GetPlayerIdsForTeamBySeason(seasonStartYear, teamId);
+            var playerIds = await _nhlDataGetter.PlayerDataGetter.GetPlayerIdsForTeamBySeason(seasonStartYear, teamAbbr);
             DbPlayer playerValue;
             var playerValues = new List<DbPlayer>();
             foreach(var playerId in playerIds)

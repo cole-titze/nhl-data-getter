@@ -52,7 +52,10 @@ namespace DataAccess.GameRepository
         /// <returns>None</returns>
         public async Task CacheSeasonOfGames(int seasonStartYear)
         {
-            _cachedSeasonsGames = await _dbContext.Game.Where(s => s.seasonStartYear == seasonStartYear).ToListAsync();
+            _cachedSeasonsGames = await _dbContext.Game.Where(s => s.seasonStartYear == seasonStartYear)
+                                        .Include(x => x.awayTeam)
+                                        .Include(x => x.homeTeam)
+                                        .ToListAsync();
         }
         /// <summary>
         /// Gets if a game exists in cache

@@ -11,6 +11,7 @@ namespace DataAccess
             _connectionString = connectionString;
         }
         public virtual DbSet<DbGame> Game { get; set; } = null!;
+        public virtual DbSet<DbTeam> Team { get; set; } = null!;
         public virtual DbSet<DbPlayer> PlayerValue { get; set; } = null!;
         public virtual DbSet<DbGamePlayer> GamePlayer { get; set; } = null!;
         public virtual DbSet<DbSeasonGameCount> SeasonGameCount { get; set; } = null!;

@@ -25,7 +25,7 @@ namespace Services.NhlData
         /// <param name="game">Game to get players from</param>
         /// <returns>List of players from the game</returns>
         /// <exception cref="NotImplementedException"></exception>
-        /// Example Request: http://statsapi.web.nhl.com/api/v1/game/2019020001/feed/live
+        /// Example Request: https://api-web.nhle.com/v1/gamecenter/2023020884/boxscore
         public async Task<Roster> GetGameRoster(DbGame game)
         {
             Roster players = await GetPastGameRoster(game);
@@ -64,6 +64,8 @@ namespace Services.NhlData
             string url;
             string query;
 
+            var teamAbbr = game.GetTeamAbbr(teamId);
+
             if (_cachedTeamRoster.ContainsKey(teamId))
             {
                 foreach(var player in _cachedTeamRoster[teamId])
@@ -75,7 +77,7 @@ namespace Services.NhlData
             }
             else
             {
-                url = "https://statsapi.web.nhl.com/api/v1/teams/" + teamId.ToString() + "/roster";
+                url = "https://api-web.nhle.com/v1/roster/" + teamAbbr + "/current";
                 query = "";
                 var teamResponse = await _requestMaker.MakeRequest(url, query);
                 if (teamResponse == null)
@@ -97,7 +99,7 @@ namespace Services.NhlData
         /// <returns>List of players from a game</returns>
         private async Task<Roster> GetPastGameRoster(DbGame game)
         {
-            string url = "http://statsapi.web.nhl.com/api/v1/game/" + game.id.ToString() + "/feed/live";
+            string url = "https://api-web.nhle.com/v1/gamecenter/" + game.id.ToString() + "/boxscore";
             string query = "";
 
             var rosterResponse = await _requestMaker.MakeRequest(url, query);
@@ -115,15 +117,15 @@ namespace Services.NhlData
         /// <param name="seasonStartYear">Season to get roster from</param>
         /// <param name="teamId">Team to get players from</param>
         /// <returns>List of player ids</returns>
-        /// Ex. https://statsapi.web.nhl.com/api/v1/teams/1/roster?season=20112012
-        public async Task<List<int>> GetPlayerIdsForTeamBySeason(int seasonStartYear, int teamId)
+        /// Ex. https://api-web.nhle.com/v1/roster/TOR/20232024
+        public async Task<List<int>> GetPlayerIdsForTeamBySeason(int seasonStartYear, string teamAbbr)
         {
-            string url = "https://statsapi.web.nhl.com/api/v1/teams/" + teamId.ToString() + "/";
-            string query = "roster?season=" + NhlDataGetter.GetFullSeasonId(seasonStartYear).ToString();
+            string url = "https://api-web.nhle.com/v1/roster/" + teamAbbr + "/" + NhlDataGetter.GetFullSeasonId(seasonStartYear).ToString();
+            string query = "";
             var playersResponse = await _requestMaker.MakeRequest(url, query);
             if (playersResponse == null)
             {
-                _logger.LogWarning($"Failed to get player ids from team request: Season: {seasonStartYear} Team: {teamId}");
+                _logger.LogWarning($"Failed to get player ids from team request: Season: {seasonStartYear} Team: {teamAbbr}");
                 return new List<int>();
             }
 
@@ -135,31 +137,30 @@ namespace Services.NhlData
         /// <param name="playerId">Player id</param>
         /// <param name="seasonStartYear">Season to get value from</param>
         /// <returns>Player value</returns>
-        /// Ex. https://statsapi.web.nhl.com/api/v1/people/8466141/stats?stats=statsSingleSeason&season=20152016
-        /// Ex. https://statsapi.web.nhl.com/api/v1/people/8466141
+        /// Ex. https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=seasonId=20232024%20and%20playerId=8478402
+        /// Ex. https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=8478402
         public async Task<DbPlayer> GetPlayerValueBySeason(int playerId, int seasonStartYear)
         {
-            string url = "https://statsapi.web.nhl.com/api/v1/people/" + playerId.ToString() + "/";
-            string query = "stats?stats=statsSingleSeason&season=" + NhlDataGetter.GetFullSeasonId(seasonStartYear).ToString();
+            string url = "https://api.nhle.com/stats/rest/en/skater/summary";
+            string query = "?cayenneExp=seasonId=" + NhlDataGetter.GetFullSeasonId(seasonStartYear).ToString() + "%20and%20playerId=" + playerId.ToString();
             var playerStatResponse = await _requestMaker.MakeRequest(url, query);
             if (playerStatResponse == null)
             {
                 _logger.LogWarning($"Player stat request failed: player id: {playerId} year: {seasonStartYear}");
                 return new DbPlayer();
             }
-
-            query = "";
-            var playerPositionResponse = await _requestMaker.MakeRequest(url, query);
-            if (playerPositionResponse == null)
+            // If nothing was returned check the goalie api
+            if ((int)playerStatResponse.total == 0)
             {
-                _logger.LogWarning($"Player position request failed: player id: {playerId} year: {seasonStartYear}");
-                return new DbPlayer();
+                url = "https://api.nhle.com/stats/rest/en/goalie/summary";
+                query = "?cayenneExp=seasonId=" + NhlDataGetter.GetFullSeasonId(seasonStartYear).ToString() + "%20and%20playerId=" + playerId.ToString();
+                playerStatResponse = await _requestMaker.MakeRequest(url, query);
             }
+
             IPlayerStats playerStats = MapPlayerStatResponseToPlayer.BuildPlayerStats(playerStatResponse);
-            playerStats.position = MapPositionStrToPosition.Map(MapPlayerBioResponseToPositionStr.Map(playerPositionResponse));
             DbPlayer player = MapPlayerStatResponseToPlayer.MapPlayerStatsToPlayer(playerStats);
             player.seasonStartYear = seasonStartYear;
-            player.name = MapPlayerBioResponseToName.Map(playerPositionResponse);
+            player.name = MapPlayerBioResponseToName.Map(playerStatResponse);
             player.id = playerId;
 
             return player;

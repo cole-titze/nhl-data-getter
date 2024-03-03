@@ -8,6 +8,7 @@ using Services.NhlData;
 using BusinessLogic.PlayerGetter;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using DataAccess.TeamRepository;
 
 namespace Entry
 {
@@ -35,6 +36,7 @@ namespace Entry
             var nhlDbContext = new NhlDbContext(gamesConnectionString);
             var playerRepo = new PlayerRepository(nhlDbContext);
             var gameRepo = new GameRepository(nhlDbContext);
+            var teamRepo = new TeamRepository(nhlDbContext);
             var requestMaker = new RequestMaker(new HttpClientWrapper());
 
             var seasonGameCountCache = await gameRepo.GetSeasonGameCounts();
@@ -47,7 +49,7 @@ namespace Entry
             var playerYearRange = new YearRange(START_YEAR - 1, DateTime.Now); // We use player values from previous season for team ratings
 
             _logger.LogTrace("Starting Player Getter");
-            var playerGetter = new PlayerGetter(playerRepo, nhlRequestMaker, _loggerFactory);
+            var playerGetter = new PlayerGetter(playerRepo, teamRepo, nhlRequestMaker, _loggerFactory);
             await playerGetter.GetPlayers(playerYearRange);
             _logger.LogTrace("Completed Player Getter");
 

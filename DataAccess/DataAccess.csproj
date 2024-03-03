@@ -12,6 +12,7 @@
     <None Remove="Microsoft.EntityFrameworkCore.Tools" />
     <None Remove="GameRepository\" />
     <None Remove="PlayerRepository\" />
+    <None Remove="TeamRepository\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj" />
@@ -19,6 +20,7 @@
   <ItemGroup>
     <Folder Include="GameRepository\" />
     <Folder Include="PlayerRepository\" />
+    <Folder Include="TeamRepository\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.12" />

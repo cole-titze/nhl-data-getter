@@ -1,4 +1,6 @@
-﻿namespace Entities.DbModels
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Entities.DbModels
 {
     public enum Winner
     {
@@ -28,6 +30,10 @@
         public int homeHits { get; set; }
         public int awayHits { get; set; }
         public bool hasBeenPlayed { get; set; }
+        [ForeignKey("homeTeamId")]
+        public DbTeam homeTeam { get; set; } = new DbTeam();
+        [ForeignKey("awayTeamId")]
+        public DbTeam awayTeam { get; set; } = new DbTeam();
 
         public void Clone(DbGame game)
         {
@@ -60,6 +66,19 @@
         public bool IsValid()
         {
             return id != -1;
+        }
+        /// <summary>
+        /// Gets the abbreviation for the team
+        /// </summary>
+        /// <returns>Three letter abbreviation</returns>
+        public string GetTeamAbbr(int teamId)
+        {
+            if (teamId == homeTeamId)
+                return homeTeam.abbreviation;
+            if (teamId == awayTeamId)
+                return awayTeam.abbreviation;
+
+            return "";
         }
     }
 }
